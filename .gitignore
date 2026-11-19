@@ -1,0 +1,24 @@
+# Ambiente virtual e cache do Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Configuração local (pode conter dados do ambiente; use o .env.example como modelo)
+.env
+
+# Logs gerados pelo servidor
+logs/
+*.log
+
+# Editores e sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Java / Spring Boot (backend)
+target/
+*.iml
+*.class

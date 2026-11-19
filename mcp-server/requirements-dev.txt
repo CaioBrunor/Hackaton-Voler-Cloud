@@ -1,0 +1,4 @@
+# Dependências para rodar os testes automatizados
+-r requirements.txt
+pytest>=8,<10
+pytest-asyncio>=1.0,<2

@@ -1,0 +1,8 @@
+# SDK oficial do Model Context Protocol (versão 2)
+mcp>=2.3,<3
+# Cliente HTTP para chamar a API do backend Spring Boot
+httpx>=0.28,<1
+# Validação e formatos dos dados (já instalado junto com o mcp)
+pydantic>=2.11,<3
+# Leitura do arquivo .env
+python-dotenv>=1.0,<2

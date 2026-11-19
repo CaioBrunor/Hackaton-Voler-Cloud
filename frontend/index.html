@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechZone — Centro de Comando Antiechente e Defesa Civil</title>
+  <link rel="icon" href="data:," />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tipografia Contemporânea: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            body: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            abyss: {
+              950: '#050B16',
+              900: '#0A1529',
+              800: '#0F203D',
+            },
+            petrol: {
+              700: '#125B63',
+              500: '#249E96',
+              300: '#38D9C6',
+            },
+            signal: {
+              amber: '#FFB020',
+              coral: '#FF3B5C',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --navy-deep: #050B16;
+      --navy-surface: #0A1529;
+      --teal-dark: #125B63;
+      --teal-mid: #249E96;
+      --teal-bright: #38D9C6;
+      --amber: #FFB020;
+      --coral: #FF3B5C;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--navy-deep);
+      color: #F1F7FA;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    /* Superfícies em Vidro Arquitetônico (Frosted Glass) */
+    .glass-shell {
+      background: linear-gradient(160deg, rgba(10, 21, 41, 0.82) 0%, rgba(5, 11, 22, 0.92) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(56, 217, 198, 0.16);
+      box-shadow:
+        0 24px 56px rgba(2, 6, 14, 0.72),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .glass-card-urgent {
+      background: linear-gradient(160deg, rgba(24, 14, 28, 0.88) 0%, rgba(10, 15, 29, 0.94) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 59, 92, 0.44);
+      box-shadow:
+        0 24px 60px rgba(255, 59, 92, 0.2),
+        inset 0 1px 0 rgba(255, 120, 145, 0.14);
+    }
+
+    .glass-pill {
+      background: rgba(10, 21, 41, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(56, 217, 198, 0.2);
+      box-shadow: 0 14px 36px rgba(2, 6, 14, 0.6);
+    }
+
+    /* Senso de Urgência Periférico Sofisticado (Modo Cidadão em Área de Risco) */
+    @keyframes urgencyFramePulse {
+      0%, 100% {
+        box-shadow: inset 0 0 42px rgba(255, 59, 92, 0.22);
+      }
+      50% {
+        box-shadow: inset 0 0 85px rgba(255, 59, 92, 0.44);
+      }
+    }
+
+    .citizen-urgency-frame {
+      animation: urgencyFramePulse 2.8s ease-in-out infinite;
+    }
+
+    /* Animações Suaves do Mapa Vetorial */
+    @keyframes svgPulse {
+      0% {
+        transform: scale(0.75);
+        opacity: 0.85;
+      }
+      75% {
+        transform: scale(2.4);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(2.4);
+        opacity: 0;
+      }
+    }
+
+    @keyframes routeDashFlow {
+      to {
+        stroke-dashoffset: -36;
+      }
+    }
+
+    .svg-pulse-ring {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: svgPulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+
+    .route-animated {
+      stroke-dasharray: 10 8;
+      animation: routeDashFlow 1.4s linear infinite;
+    }
+
+    .tabular {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Scrollbar Minimalista */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(36, 158, 150, 0.35);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen w-full relative bg-abyss-950 selection:bg-petrol-300 selection:text-abyss-950">
+
+  <!-- ===================================================================== -->
+  <!-- CAMADA 0: MAPA VETORIAL GENÉRICO 100% INTEGRADO (SEM API KEY)         -->
+  <!-- ===================================================================== -->
+  <div id="mapViewport" class="fixed inset-0 z-0 w-full h-full overflow-hidden bg-abyss-950 cursor-grab active:cursor-grabbing select-none">
+    <svg
+      id="vectorMap"
+      viewBox="0 0 1200 800"
+      preserveAspectRatio="xMidYMid slice"
+      class="w-full h-full block"
+    >
+      <defs>
+        <!-- Gradiente de Fundo Azul-Marinho Profundo -->
+        <radialGradient id="navyBgGrad" cx="50%" cy="48%" r="70%">
+          <stop offset="0%" stop-color="#0B1930" />
+          <stop offset="65%" stop-color="#071020" />
+          <stop offset="100%" stop-color="#040812" />
+        </radialGradient>
+
+        <!-- Gradiente de Água (Reservatório e Canais) -->
+        <linearGradient id="waterTealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#125B63" stop-opacity="0.7" />
+          <stop offset="100%" stop-color="#249E96" stop-opacity="0.35" />
+        </linearGradient>
+
+        <!-- Gradiente de Densidade Populacional (Defesa Civil) -->
+        <radialGradient id="densityHeatGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#38D9C6" stop-opacity="0.34" />
+          <stop offset="55%" stop-color="#249E96" stop-opacity="0.14" />
+          <stop offset="100%" stop-color="#125B63" stop-opacity="0" />
+        </radialGradient>
+
+        <!-- Gradiente de Perímetro de Risco Iminente -->
+        <radialGradient id="dangerHeatGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#FF3B5C" stop-opacity="0.32" />
+          <stop offset="65%" stop-color="#FF3B5C" stop-opacity="0.1" />
+          <stop offset="100%" stop-color="#FF3B5C" stop-opacity="0" />
+        </radialGradient>
+
+        <!-- Brilho Suave para Rotas Seguras -->
+        <filter id="tealGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- Fundo Base -->
+      <rect width="1200" height="800" fill="url(#navyBgGrad)" />
+
+      <!-- Grupo Transformável (Pan & Zoom) -->
+      <g id="mapSceneGroup" transform="translate(0, 0) scale(1)">
+        
+        <!-- Quadras Urbanas Abstratas e Silenciosas -->
+        <g fill="#0A162B" stroke="#122544" stroke-width="1">
+          <rect x="90" y="95" width="210" height="140" rx="22" />
+          <rect x="335" y="80" width="240" height="125" rx="22" />
+          <rect x="615" y="90" width="225" height="150" rx="22" />
+          <rect x="875" y="105" width="235" height="145" rx="22" />
+
+          <rect x="85" y="275" width="195" height="175" rx="22" />
+          <rect x="315" y="245" width="215" height="165" rx="22" />
+          <rect x="650" y="275" width="195" height="160" rx="22" />
+          <rect x="880" y="285" width="230" height="175" rx="22" />
+
+          <rect x="95" y="485" width="220" height="195" rx="22" />
+          <rect x="350" y="470" width="210" height="205" rx="22" />
+          <rect x="605" y="485" width="235" height="190" rx="22" />
+          <rect x="875" y="495" width="230" height="185" rx="22" />
+        </g>
+
+        <!-- Rótulos Discretos dos Setores Urbanos -->
+        <g fill="#334E75" font-size="11" font-weight="600" letter-spacing="2.2">
+          <text x="135" y="145">SETOR NORTE</text>
+          <text x="415" y="315">SETOR CENTRAL</text>
+          <text x="915" y="340">VALE LESTE</text>
+          <text x="405" y="615">COLINA SUL</text>
+          <text x="135" y="545">DISTRITO OESTE</text>
+        </g>
+
+        <!-- Malha Viária Secundária -->
+        <g stroke="#14294A" stroke-width="5" stroke-linecap="round" fill="none">
+          <path d="M 50 255 L 1150 255" />
+          <path d="M 50 460 L 1150 460" />
+          <path d="M 50 695 L 1150 695" />
+          <path d="M 300 40 L 300 760" />
+          <path d="M 590 40 L 590 760" />
+          <path d="M 860 40 L 860 760" />
+        </g>
+
+        <!-- Avenidas Principais -->
+        <g stroke="#1C3966" stroke-width="9" stroke-linecap="round" fill="none">
+          <path d="M 60 360 L 530 360 L 720 460 L 1140 460" />
+          <path d="M 460 50 L 460 440 L 540 540 L 540 755" />
+          <path d="M 740 50 L 740 755" />
+        </g>
+
+        <!-- Reservatório Norte (Corpo Hídrico) -->
+        <path
+          d="M 115 110 C 175 95, 255 110, 275 155 C 290 190, 245 225, 185 220 C 130 215, 90 165, 115 110 Z"
+          fill="url(#waterTealGrad)"
+          stroke="#249E96"
+          stroke-width="1.8"
+        />
+        <text x="142" y="172" fill="#38D9C6" font-size="10" font-weight="600" opacity="0.85">
+          RESERVATÓRIO NORTE
+        </text>
+
+        <!-- Canal Leste (Escoamento Controlado) -->
+        <path
+          d="M 940 60 C 930 220, 960 360, 925 520 C 905 610, 935 690, 955 760"
+          fill="none"
+          stroke="#19787E"
+          stroke-width="8"
+          stroke-linecap="round"
+          opacity="0.75"
+        />
+
+        <!-- Canal Central (Eixo Principal de Drenagem) -->
+        <path
+          d="M 230 218 C 310 275, 420 315, 515 390 C 605 460, 665 575, 715 760"
+          fill="none"
+          stroke="#1D8A91"
+          stroke-width="9"
+          stroke-linecap="round"
+          opacity="0.8"
+        />
+
+        <!-- Camada Exclusiva Defesa Civil: Densidade Populacional (Manchas Translúcidas) -->
+        <g id="svgCivilDensityLayer" class="hidden">
+          <circle cx="485" cy="395" r="185" fill="url(#densityHeatGrad)" />
+          <circle cx="765" cy="365" r="165" fill="url(#densityHeatGrad)" />
+          <circle cx="465" cy="575" r="150" fill="url(#densityHeatGrad)" />
+        </g>
+
+        <!-- Perímetro de Risco Iminente no Canal Central -->
+        <circle cx="515" cy="390" r="115" fill="url(#dangerHeatGrad)" class="demo-risco" />
+
+        <!-- Trecho Crítico em Sobrecarga (Canal Central) -->
+        <path
+          d="M 455 346 C 485 366, 515 390, 558 430"
+          class="demo-risco"
+          fill="none"
+          stroke="#FF3B5C"
+          stroke-width="10"
+          stroke-linecap="round"
+          stroke-dasharray="12 8"
+        />
+
+        <!-- Rota Segura Ativa (Cidadão -> Abrigo / Pronto-Socorro) -->
+        <polyline
+          id="svgSafeRouteLine"
+          points="540,445 540,540 460,540 460,625"
+          fill="none"
+          stroke="#38D9C6"
+          stroke-width="5.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          filter="url(#tealGlow)"
+          class="route-animated"
+        />
+
+        <!-- Rota de Despacho dos Bombeiros (Ativa quando houver SOS na Defesa Civil) -->
+        <polyline
+          id="svgRescueRouteLine"
+          points="740,210 740,360 590,360 590,445 540,445"
+          fill="none"
+          stroke="#FFB020"
+          stroke-width="5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-dasharray="10 8"
+          class="hidden"
+        />
+
+        <!-- Marcadores de Abrigos e Pronto-Socorros (Renderizados via JS) -->
+        <g id="svgDestinationsLayer"></g>
+
+        <!-- Marcadores Exclusivos da Defesa Civil (Sensores e Base Bombeiros) -->
+        <g id="svgCivilNodesLayer" class="hidden">
+          <!-- Sensor #S-04 com Falha Técnica -->
+          <g transform="translate(740, 360)" class="cursor-pointer demo-risco" onclick="focusSvgPoint(740, 360)">
+            <circle r="16" fill="#FFB020" opacity="0.25" class="svg-pulse-ring" />
+            <circle r="7" fill="#FFB020" stroke="#050B16" stroke-width="2.5" />
+            <g transform="translate(14, -18)">
+              <rect width="188" height="38" rx="10" fill="rgba(10,21,41,0.92)" stroke="rgba(255,176,32,0.55)" />
+              <text x="10" y="16" fill="#FFB020" font-size="10.5" font-weight="700">Sensor #S-04 • Falha Técnica</text>
+              <text x="10" y="30" fill="#94A3B8" font-size="9.5">Setor Leste • Vistoria Requerida</text>
+            </g>
+          </g>
+
+          <!-- Base Defesa Civil & Bombeiros -->
+          <g transform="translate(740, 210)" class="cursor-pointer" onclick="focusSvgPoint(740, 210)">
+            <circle r="7.5" fill="#38D9C6" stroke="#050B16" stroke-width="2.5" />
+            <g transform="translate(14, -18)">
+              <rect width="178" height="38" rx="10" fill="rgba(10,21,41,0.92)" stroke="rgba(56,217,198,0.45)" />
+              <text x="10" y="16" fill="#F1F7FA" font-size="10.5" font-weight="600">Base Defesa Civil &amp; Resgate</text>
+              <text x="10" y="30" fill="#38D9C6" font-size="9.5">Unidade ABT-04 Pronta</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- Riscos reais: desenhados por js/mcp.js a partir dos dados do MCP (substituem os desenhos de demonstração .demo-risco) -->
+        <g id="svgLiveRiskLayer"></g>
+
+        <!-- Ponto Crítico: Canal Central (Sobrecarga 96%) -->
+        <g transform="translate(505, 382)" class="cursor-pointer demo-risco" onclick="focusSvgPoint(505, 382)">
+          <circle r="18" fill="#FF3B5C" opacity="0.35" class="svg-pulse-ring" />
+          <circle r="8" fill="#FF3B5C" stroke="#050B16" stroke-width="2.5" />
+          <g transform="translate(-212, -46)">
+            <rect width="198" height="40" rx="11" fill="rgba(22,12,26,0.94)" stroke="rgba(255,59,92,0.6)" />
+            <text x="11" y="17" fill="#FF3B5C" font-size="10.5" font-weight="700">Canal Central • Sobrecarga 96%</text>
+            <text x="11" y="31" fill="#E2E8F0" font-size="9.5">Transbordamento estimado em 7 min</text>
+          </g>
+        </g>
+
+        <!-- Geolocalização Atual do Cidadão -->
+        <g transform="translate(540, 445)" class="cursor-pointer" onclick="focusSvgPoint(540, 445)">
+          <circle r="18" fill="#38D9C6" opacity="0.35" class="svg-pulse-ring" />
+          <circle r="8" fill="#38D9C6" stroke="#050B16" stroke-width="2.5" />
+          <g transform="translate(15, -16)">
+            <rect width="186" height="40" rx="11" fill="rgba(10,21,41,0.94)" stroke="rgba(56,217,198,0.55)" />
+            <text id="svgCitizenPinTitle" x="11" y="17" fill="#F1F7FA" font-size="10.5" font-weight="700">Sua Localização Atual</text>
+            <text x="11" y="31" fill="#38D9C6" font-size="9.5">Av. das Águas • Perímetro de Risco</text>
+          </g>
+        </g>
+
+      </g>
+    </svg>
+
+    <!-- Controles Discretos de Zoom do Mapa Vetorial -->
+    <div class="fixed right-5 top-28 z-20 hidden sm:flex flex-col glass-pill rounded-2xl overflow-hidden pointer-events-auto">
+      <button
+        type="button"
+        onclick="adjustMapZoom(0.18)"
+        title="Aproximar"
+        class="w-9 h-9 flex items-center justify-center text-petrol-300 hover:bg-petrol-700/40 text-base font-semibold border-b border-white/10 transition"
+      >
+        +
+      </button>
+      <button
+        type="button"
+        onclick="adjustMapZoom(-0.18)"
+        title="Afastar"
+        class="w-9 h-9 flex items-center justify-center text-petrol-300 hover:bg-petrol-700/40 text-base font-semibold border-b border-white/10 transition"
+      >
+        −
+      </button>
+      <button
+        type="button"
+        onclick="resetMapTransform()"
+        title="Centralizar Mapa"
+        class="w-9 h-9 flex items-center justify-center text-slate-300 hover:text-white hover:bg-petrol-700/40 text-xs transition"
+      >
+        ⟲
+      </button>
+    </div>
+  </div>
+
+  <!--
+    COMENTÁRIO DO SISTEMA — ALERTA VISUAL DE URGÊNCIA:
+    Esta luz vermelha piscando nas bordas da tela (#urgencyVignette) será ativada
+    SOMENTE se a geolocalização do cidadão detectar que ele está dentro de uma área de risco.
+    Caso o cidadão esteja em uma zona segura, a interface permanece limpa sem essa luz.
+  -->
+  <div
+    id="urgencyVignette"
+    class="hidden fixed inset-0 z-20 pointer-events-none citizen-urgency-frame transition-opacity duration-500"
+  ></div>
+
+  <!-- ===================================================================== -->
+  <!-- TELA DE AUTENTICAÇÃO MINIMALISTA (ANTES DO MENU PRINCIPAL)            -->
+  <!-- ===================================================================== -->
+  <section
+    id="loginScreen"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-abyss-950/75 backdrop-blur-xl transition-opacity duration-500"
+  >
+    <!-- Iluminação Ambiente Difusa em Verde-Petróleo -->
+    <div class="pointer-events-none absolute w-[520px] h-[520px] rounded-full bg-petrol-700/20 blur-[120px] -top-24 -left-24"></div>
+    <div class="pointer-events-none absolute w-[460px] h-[460px] rounded-full bg-petrol-500/15 blur-[110px] bottom-0 right-0"></div>
+
+    <div class="glass-shell rounded-[32px] w-full max-w-md p-7 sm:p-9 relative z-10 space-y-6">
+      <!-- Cabeçalho da Marca -->
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 rounded-2xl bg-petrol-700/35 border border-petrol-300/35 flex items-center justify-center mx-auto shadow-lg">
+          <svg class="w-6 h-6 text-petrol-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3C12 3 6 10.2 6 14.5C6 17.8137 8.68629 20.5 12 20.5C15.3137 20.5 18 17.8137 18 14.5C18 10.2 12 3 12 3Z" />
+          </svg>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-semibold tracking-[0.14em] text-white pt-1">
+          Tech<span class="text-petrol-300 font-light">Zone</span>
+        </h1>
+        <p class="text-xs text-slate-400">
+          Centro Integrado Antiechente e Defesa Civil
+        </p>
+      </div>
+
+      <!-- Seletor de Perfil de Acesso -->
+      <div class="space-y-2">
+        <span class="text-[11px] uppercase tracking-wider text-slate-400 font-medium block text-center">
+          Selecione o perfil de acesso
+        </span>
+        <div class="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-abyss-950/85 border border-white/10">
+          <button
+            type="button"
+            id="loginRoleCitizen"
+            onclick="selectLoginRole('citizen')"
+            class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 bg-petrol-300 text-abyss-950 shadow-md"
+          >
+            Cidadão
+          </button>
+          <button
+            type="button"
+            id="loginRoleCivil"
+            onclick="selectLoginRole('civil')"
+            class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 text-slate-300 hover:text-white"
+          >
+            Defesa Civil
+          </button>
+        </div>
+      </div>
+
+      <!-- Formulário Limpo com Dados de Demonstração Preenchidos -->
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label id="loginIdentifierLabel" for="loginIdentifier" class="block text-xs font-medium text-slate-300 mb-1.5">
+            E-mail ou CPF do Cidadão
+          </label>
+          <input
+            id="loginIdentifier"
+            type="text"
+            required
+            value="mariana.costa@cidadao.gov.br"
+            class="w-full px-4 py-3 rounded-2xl bg-abyss-950/80 border border-white/10 focus:border-petrol-300/60 focus:outline-none text-sm text-white placeholder-slate-500 transition"
+          />
+        </div>
+
+        <div>
+          <label for="loginPassword" class="block text-xs font-medium text-slate-300 mb-1.5">
+            Senha de Acesso
+          </label>
+          <input
+            id="loginPassword"
+            type="password"
+            required
+            value="••••••••••"
+            class="w-full px-4 py-3 rounded-2xl bg-abyss-950/80 border border-white/10 focus:border-petrol-300/60 focus:outline-none text-sm text-white placeholder-slate-500 transition"
+          />
+        </div>
+
+        <!-- Contextualização Discreta do Cenário -->
+        <div id="loginRoleHint" class="rounded-2xl bg-petrol-700/20 border border-petrol-300/20 px-4 py-3 text-xs text-slate-300 leading-relaxed">
+          <span class="text-petrol-300 font-semibold block mb-0.5">Simulação de Área de Risco Ativa:</span>
+          Sua geolocalização está na Av. das Águas (Setor Central), a 280 m de um canal com previsão de transbordamento iminente.
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-3.5 rounded-full bg-gradient-to-r from-petrol-500 to-petrol-300 hover:brightness-110 text-abyss-950 font-semibold text-sm tracking-wide shadow-[0_12px_30px_rgba(56,217,198,0.28)] transition-all duration-300"
+        >
+          Entrar no Sistema
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- INTERFACE PRINCIPAL (APÓS AUTENTICAÇÃO)                               -->
+  <!-- ===================================================================== -->
+  <div id="mainAppShell" class="hidden relative z-10 min-h-screen flex flex-col justify-between p-4 sm:p-6 pointer-events-none">
+
+    <!-- ------------------------------------------------------------------- -->
+    <!-- BARRA SUPERIOR FLUTUANTE E MINIMALISTA                              -->
+    <!-- ------------------------------------------------------------------- -->
+    <header class="w-full max-w-7xl mx-auto pointer-events-auto z-30">
+      <nav
+        aria-label="Navegação Principal"
+        class="glass-shell rounded-3xl lg:rounded-full px-4 sm:px-6 py-2.5 flex flex-col lg:flex-row items-center justify-between gap-3"
+      >
+        <!-- Identidade & Localização -->
+        <div class="flex items-center justify-between w-full lg:w-auto gap-2 sm:gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-petrol-700/40 border border-petrol-300/35 flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4 text-petrol-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3C12 3 6 10.2 6 14.5C6 17.8137 8.68629 20.5 12 20.5C15.3137 20.5 18 17.8137 18 14.5C18 10.2 12 3 12 3Z" />
+              </svg>
+            </div>
+            <div>
+              <span class="text-sm sm:text-base font-semibold tracking-[0.12em] text-white block leading-none">
+                Tech<span class="text-petrol-300 font-light">Zone</span>
+              </span>
+              <span class="hidden sm:block text-[10px] text-slate-400 tracking-wide mt-0.5">
+                Monitoramento Urbano Integrado
+              </span>
+            </div>
+          </div>
+
+          <!-- Botão do Assistente IA no celular (só o ícone) -->
+          <button
+            id="assistenteBtnMobile"
+            type="button"
+            aria-label="Abrir o assistente de IA"
+            title="Assistente de IA"
+            class="inline-flex lg:hidden items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-petrol-300 text-abyss-950 hover:brightness-110 transition ml-auto shrink-0"
+          >
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/></svg>
+          </button>
+
+          <!-- Botão do Conector MCP no celular (só para a Defesa Civil) -->
+          <button
+            id="mcpBridgeTriggerBtnMobile"
+            type="button"
+            onclick="toggleMcpDrawer()"
+            title="Conexão com o Servidor MCP"
+            class="hidden lg:hidden items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-petrol-700/25 border border-petrol-300/35 text-[11px] font-medium text-petrol-300 transition shrink-0"
+          >
+            <span id="mcpStatusDotMobile" class="w-2 h-2 rounded-full bg-slate-400"></span>
+            <span id="mcpStatusLabelMobile" class="whitespace-nowrap max-[380px]:hidden">MCP: Simulado</span>
+            <span class="hidden max-[380px]:inline">MCP</span>
+          </button>
+
+          <!-- Botão Trocar Perfil Mobile -->
+          <button
+            onclick="logoutToLogin()"
+            class="lg:hidden px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-medium text-slate-200 whitespace-nowrap shrink-0 transition"
+          >
+            <span class="sm:hidden">Sair</span>
+            <span class="hidden sm:inline">Trocar Perfil / Sair</span>
+          </button>
+        </div>
+
+        <!-- 4 Abas Espaçadas -->
+        <div class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto max-w-full py-0.5">
+          <button
+            id="tabBtn-painel"
+            onclick="switchTab('painel')"
+            class="px-3.5 lg:px-2.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition whitespace-nowrap inline-flex items-center gap-2"
+          >
+            <span id="tabIcon-painel" class="inline-flex items-center"></span>
+            <span id="tabLabel-painel">01. Painel</span>
+          </button>
+          <button
+            id="tabBtn-clima"
+            onclick="switchTab('clima')"
+            class="px-3.5 lg:px-2.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition whitespace-nowrap inline-flex items-center gap-2"
+          >
+            <span id="tabIcon-clima" class="inline-flex items-center"></span>
+            <span id="tabLabel-clima">02. Clima &amp; Sensores</span>
+          </button>
+          <button
+            id="tabBtn-abrigos"
+            onclick="switchTab('abrigos')"
+            class="px-3.5 lg:px-2.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition whitespace-nowrap inline-flex items-center gap-2"
+          >
+            <span id="tabIcon-abrigos" class="inline-flex items-center"></span>
+            <span id="tabLabel-abrigos">03. Abrigos &amp; Rotas</span>
+          </button>
+          <button
+            id="tabBtn-socorro"
+            onclick="switchTab('socorro')"
+            class="px-3.5 lg:px-2.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition whitespace-nowrap inline-flex items-center gap-2"
+          >
+            <span id="tabIcon-socorro" class="inline-flex items-center"></span>
+            <span id="tabLabel-socorro">04. Socorro</span>
+            <span id="navSosDot" class="hidden w-2 h-2 rounded-full bg-signal-coral animate-ping"></span>
+          </button>
+        </div>
+
+        <!-- Indicador de Perfil Logado + Trocar Perfil / Sair (Desktop) -->
+        <div class="hidden lg:flex items-center gap-3">
+          <!-- Botão do Assistente IA (Claude), para os dois perfis -->
+          <button
+            id="assistenteBtn"
+            type="button"
+            title="Assistente de IA: tire dúvidas sobre a situação da cidade"
+            class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-petrol-300 hover:brightness-110 text-abyss-950 text-xs font-semibold whitespace-nowrap shrink-0 transition"
+          >
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/></svg>
+            <span>IA</span>
+          </button>
+
+          <!-- Botão Discreto de Integração MCP (Visível no Perfil Defesa Civil / Hackathon) -->
+          <button
+            id="mcpBridgeTriggerBtn"
+            type="button"
+            onclick="toggleMcpDrawer()"
+            title="Configurar e inspecionar conexão com Servidor MCP"
+            class="hidden items-center gap-2 px-3 py-1 rounded-full bg-petrol-700/25 hover:bg-petrol-700/40 border border-petrol-300/35 text-xs font-medium text-petrol-300 transition"
+          >
+            <span id="mcpStatusDot" class="w-2 h-2 rounded-full bg-petrol-300"></span>
+            <span id="mcpStatusLabel" class="whitespace-nowrap">MCP: Simulado</span>
+          </button>
+
+          <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-abyss-950/80 border border-white/10">
+            <span id="headerRoleDot" class="w-2 h-2 rounded-full bg-signal-coral"></span>
+            <span id="headerRoleBadge" class="text-xs font-medium text-slate-200">Cidadão • Setor Central</span>
+          </div>
+          <button
+            onclick="logoutToLogin()"
+            title="Trocar perfil ou sair"
+            class="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-slate-200 hover:text-white whitespace-nowrap transition"
+          >
+            Sair
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- =================================================================== -->
+    <!-- ABA 01: PAINEL PRINCIPAL (MAPA EM TELA CHEIA + 3 ELEMENTOS)          -->
+    <!-- =================================================================== -->
+    <main id="view-painel" class="flex-1 flex flex-col justify-between max-w-7xl w-full mx-auto pt-4 pointer-events-none">
+      
+      <!-- ELEMENTO 1 (TOPO ESQUERDO): PÍLULA EXPANSÍVEL DE CLIMA & BALANÇO HÍDRICO -->
+      <div class="flex flex-col md:flex-row items-start justify-between gap-3 pointer-events-none">
+        <div class="pointer-events-auto w-full max-w-sm">
+          <button
+            onclick="toggleWeatherPill()"
+            id="weatherPillBtn"
+            aria-expanded="false"
+            class="glass-shell hover:border-petrol-300/35 rounded-2xl px-4 py-3 w-full text-left transition-all duration-300"
+          >
+            <!-- Resumo Simples com Símbolos (Visão Cidadão) -->
+            <div id="weatherPillCitizenSummary" class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-signal-amber/15 border border-signal-amber/35 flex items-center justify-center shrink-0 text-signal-amber">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 16.2A4.5 4.5 0 0017.5 8h-1.8A7 7 0 104 14.9" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 14v6M8 14v6M12 16v6" />
+                  </svg>
+                </div>
+                <div>
+                  <span class="text-xs sm:text-sm font-semibold text-white block">Chuva Forte na Região</span>
+                  <span class="text-[11px] text-slate-300 block mt-0.5">Toque para ver dicas de cuidado</span>
+                </div>
+              </div>
+              <span id="weatherChevronCitizen" class="text-xs text-petrol-300 transition-transform duration-300">▾</span>
+            </div>
+
+            <!-- Resumo Técnico Detalhado (Visão Defesa Civil) -->
+            <div id="weatherPillCivilSummary" class="hidden">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2 h-2 rounded-full bg-signal-amber animate-pulse"></span>
+                  <span id="weatherCivilSummaryText" class="text-xs sm:text-sm font-medium text-white">Chuva Intensa • 48 mm/h</span>
+                </div>
+                <span id="weatherChevron" class="text-xs text-petrol-300 transition-transform duration-300">▾</span>
+              </div>
+
+              <!-- Comparativo Entrada vs. Escoamento -->
+              <div class="mt-2.5">
+                <div class="flex items-center justify-between text-[11px] text-slate-300/90 mb-1 tabular">
+                  <span>Canal mais cheio</span>
+                  <span id="weatherCivilCargaTexto" class="text-signal-coral font-semibold text-right">96% (Sobrecarga)</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-abyss-950/90 overflow-hidden">
+                  <div
+                    id="weatherCivilCargaBarra"
+                    class="h-full rounded-full bg-gradient-to-r from-petrol-500 via-signal-amber to-signal-coral"
+                    style="width: 96%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </button>
+
+          <!-- Conteúdo Expandido da Pílula -->
+          <div id="weatherPillExpanded" class="hidden glass-shell rounded-2xl p-4 mt-2 space-y-3 text-xs">
+            <!-- Conteúdo Simples para Cidadão -->
+            <div id="weatherExpandedCitizen" class="space-y-2">
+              <span class="text-petrol-300 font-semibold block">Orientação Rápida</span>
+              <p class="text-xs text-slate-200 leading-relaxed">
+                A chuva deve continuar forte pelas próximas 2 horas. Evite passar perto de canais, córregos e ruas baixas.
+              </p>
+            </div>
+
+            <!-- Conteúdo Técnico para Defesa Civil -->
+            <div id="weatherExpandedCivil" class="hidden space-y-3">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                <span class="text-slate-300 font-medium">Rede Meteorológica Oficial &amp; Local</span>
+                <span class="text-petrol-300 font-medium">Sensores Ativos</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 tabular">
+                <div class="bg-abyss-950/70 rounded-xl p-2.5">
+                  <span class="text-[10px] text-slate-400 block">Intensidade</span>
+                  <span id="weatherCivilIntensidade" class="text-sm font-semibold text-white mt-0.5 block">Muito Forte</span>
+                </div>
+                <div class="bg-abyss-950/70 rounded-xl p-2.5">
+                  <span id="weatherCivilDuracaoLabel" class="text-[10px] text-slate-400 block">Duração Est.</span>
+                  <span id="weatherCivilDuracao" class="text-sm font-semibold text-white mt-0.5 block">02h 15m</span>
+                </div>
+                <div class="bg-abyss-950/70 rounded-xl p-2.5">
+                  <span id="weatherCivilAcumuladoLabel" class="text-[10px] text-slate-400 block">Acumulado</span>
+                  <span id="weatherCivilAcumulado" class="text-sm font-semibold text-petrol-300 mt-0.5 block">74 mm</span>
+                </div>
+              </div>
+              <p id="weatherCivilNota" class="text-[11px] text-slate-300/85 leading-relaxed">
+                Sensores acionados automaticamente 2 horas antes da chuva. O escoamento no Canal Central atingiu o limiar crítico.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner Flutuante Imediato para Defesa Civil quando houver SOS Ativo -->
+        <div
+          id="civilUrgentSosBanner"
+          class="hidden pointer-events-auto glass-card-urgent rounded-2xl px-4 py-3 max-w-md w-full flex items-center justify-between gap-3"
+        >
+          <div class="flex items-start gap-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-signal-coral animate-ping mt-1.5 shrink-0"></span>
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-signal-coral block">
+                Chamado SOS Recebido • Urgente
+              </span>
+              <p id="civilBannerText" class="text-xs text-white font-medium mt-0.5">
+                Mariana Costa • Av. das Águas (Setor Central)
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onclick="switchTab('socorro')"
+            class="px-3 py-1.5 rounded-full bg-signal-coral text-white text-xs font-semibold shrink-0 hover:bg-red-500 transition"
+          >
+            Atender
+          </button>
+        </div>
+      </div>
+
+      <!-- BASE DO PAINEL: CARTÃO CONTEXTUAL (ESQUERDA) + AÇÃO RÁPIDA (DIREITA) -->
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-4 pt-6 pointer-events-none">
+        <div class="pointer-events-auto w-full max-w-xl">
+          <!-- CARTÃO CONTEXTUAL: CIDADÃO (LINGUAGEM SIMPLES + SÍMBOLOS CLAROS) -->
+          <div id="painelCardCitizen" class="glass-card-urgent rounded-3xl p-5 space-y-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-start gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-signal-coral/20 border border-signal-coral/50 flex items-center justify-center shrink-0 text-signal-coral mt-0.5">
+                  <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-signal-coral">
+                      Perigo de Alagamento • Saia Agora
+                    </span>
+                    <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-signal-coral/20 text-white font-semibold tabular inline-flex items-center gap-1">
+                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9" />
+                        <path stroke-linecap="round" d="M12 7v5l3 2" />
+                      </svg>
+                      ~7 min
+                    </span>
+                  </div>
+                  <h2 class="text-sm sm:text-base font-semibold text-white mt-1">
+                    O canal perto de você vai transbordar
+                  </h2>
+                  <p class="text-xs sm:text-sm text-slate-200/95 mt-1 leading-relaxed">
+                    Você está na <span class="text-white font-medium">Av. das Águas</span>. Siga o <span class="text-petrol-300 font-semibold">caminho verde no mapa</span> para ir a um local seguro.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Seleção Rápida de Destino Seguro com Ícones -->
+            <div class="pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-petrol-300/15 border border-petrol-300/35 flex items-center justify-center text-petrol-300 shrink-0">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                </div>
+                <div>
+                  <span class="text-[11px] text-slate-300 block">Caminho seguro marcado no mapa:</span>
+                  <span id="painelCitizenRouteLabel" class="text-xs sm:text-sm font-semibold text-petrol-300">
+                    Abrigo Escola Colina Sul • 650 m (4 min)
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button
+                  id="painelRouteAbrigoBtn"
+                  onclick="selectPainelRoute('abrigo_sul')"
+                  class="px-3.5 py-2 rounded-full text-xs font-semibold bg-petrol-300 text-abyss-950 transition inline-flex items-center gap-1.5"
+                >
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span>Abrigo</span>
+                </button>
+                <button
+                  id="painelRouteHospitalBtn"
+                  onclick="selectPainelRoute('ps_central')"
+                  class="px-3.5 py-2 rounded-full text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition inline-flex items-center gap-1.5"
+                >
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                  </svg>
+                  <span>Hospital</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARTÃO CONTEXTUAL: DEFESA CIVIL (RISCOS + DENSIDADE POPULACIONAL) -->
+          <div id="painelCardCivil" class="hidden glass-shell rounded-3xl p-5 space-y-3.5">
+            <div class="flex items-center justify-between">
+              <span id="painelCivilRiskTitle" class="text-xs font-semibold tracking-wider text-petrol-300 uppercase">
+                Risco Hidrológico &amp; Densidade Populacional
+              </span>
+              <span id="painelCivilConfianca" class="text-xs text-slate-300 tabular shrink-0">547 vagas em abrigos</span>
+            </div>
+
+            <div id="painelCivilRiskList" class="space-y-2 text-xs">
+              <div
+                onclick="focusSvgPoint(505, 382)"
+                class="cursor-pointer flex items-center justify-between p-2.5 rounded-2xl bg-abyss-950/75 hover:bg-abyss-900 border border-signal-coral/35 transition"
+              >
+                <div>
+                  <span class="font-semibold text-white block">1. Setor Central • Canal Central</span>
+                  <span class="text-slate-400 tabular">14.200 hab/km² • Capacidade em 96%</span>
+                </div>
+                <span class="text-signal-coral font-semibold">Crítico</span>
+              </div>
+
+              <div
+                onclick="focusSvgPoint(765, 365)"
+                class="cursor-pointer flex items-center justify-between p-2.5 rounded-2xl bg-abyss-950/75 hover:bg-abyss-900 border border-white/10 transition"
+              >
+                <div>
+                  <span class="font-semibold text-white block">2. Vale Leste • Avenida Perimetral</span>
+                  <span class="text-slate-400 tabular">12.800 hab/km² • Alta concentração</span>
+                </div>
+                <span class="text-signal-amber font-semibold">Alto</span>
+              </div>
+            </div>
+
+            <!-- Alerta Técnico de Sensor com Falha -->
+            <div class="pt-2.5 border-t border-white/10 flex items-center justify-between text-xs">
+              <span class="text-signal-amber flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-signal-amber"></span>
+                <span id="painelCivilFalhaTexto">Falha de telemetria: Sensor #S-04 (Setor Leste)</span>
+              </span>
+              <button onclick="switchTab('clima')" class="text-petrol-300 hover:underline font-medium">
+                Ver Sensores
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ELEMENTO 3 (BASE DIREITA): AÇÃO RÁPIDA -->
+        <div class="pointer-events-auto flex flex-col items-stretch lg:items-end gap-2">
+          <!-- Botão Cidadão (Bloqueia automaticamente após o 1º envio) -->
+          <button
+            id="painelSosBtn"
+            onclick="handlePainelSosClick()"
+            class="px-6 py-4 rounded-full bg-signal-coral hover:bg-red-500 text-white font-semibold text-sm flex items-center justify-center gap-3 shadow-[0_16px_40px_rgba(255,59,92,0.38)] transition-all duration-300"
+          >
+            <span id="painelSosIcon" class="inline-flex items-center justify-center">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </span>
+            <span id="painelSosBtnText">Pedir Ajuda aos Bombeiros</span>
+          </button>
+
+          <!-- Botão Defesa Civil -->
+          <button
+            id="painelCivilDispatchBtn"
+            onclick="switchTab('socorro')"
+            class="hidden px-6 py-4 rounded-full glass-shell hover:border-petrol-300/50 text-white font-semibold text-sm flex items-center justify-center gap-3 transition-all duration-300"
+          >
+            <span class="w-2.5 h-2.5 rounded-full bg-petrol-300"></span>
+            <span>Central SOS &amp; Despacho</span>
+            <span id="painelCivilSosCount" class="text-xs px-2.5 py-0.5 rounded-full bg-petrol-300/20 text-petrol-300 tabular">
+              0 ativos
+            </span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- ABA 02: CLIMA & SENSORES (SIMPLES P/ CIDADÃO | DETALHADA P/ DEFESA) -->
+    <!-- =================================================================== -->
+    <section id="view-clima" class="hidden flex-1 max-w-6xl w-full mx-auto pt-6 pb-2 pointer-events-auto">
+      
+      <!-- VISÃO SIMPLIFICADA PARA O CIDADÃO COM SÍMBOLOS INTUITIVOS -->
+      <div id="climaCitizenView" class="glass-shell rounded-[32px] p-5 sm:p-8 space-y-6">
+        <div class="border-b border-white/10 pb-5 flex items-start gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-petrol-300/15 border border-petrol-300/35 flex items-center justify-center text-petrol-300 shrink-0">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20 16.2A4.5 4.5 0 0017.5 8h-1.8A7 7 0 104 14.9" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 14v6M8 14v6M12 16v6" />
+            </svg>
+          </div>
+          <div>
+            <span class="text-xs font-semibold tracking-wider uppercase text-petrol-300">
+              Orientações Fáceis
+            </span>
+            <h2 class="text-xl sm:text-2xl font-semibold text-white mt-0.5">
+              Situação da Chuva e Alertas
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">
+              Veja abaixo o que está acontecendo agora e como manter você e sua família em segurança.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Cartão 1: Chuva Forte -->
+          <div class="rounded-3xl bg-abyss-950/70 border border-signal-amber/35 p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-2xl bg-signal-amber/15 border border-signal-amber/35 flex items-center justify-center text-signal-amber">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20 16.2A4.5 4.5 0 0017.5 8h-1.8A7 7 0 104 14.9" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 13l-2 4h3l-2 4" />
+                </svg>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-signal-amber/15 text-signal-amber text-xs font-semibold">
+                1. Chuva Forte
+              </span>
+            </div>
+            <h3 class="text-base font-semibold text-white">
+              Chuva forte por mais 2 horas
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Não tente atravessar ruas com água corrente, a pé ou de carro. A força da água pode derrubar pessoas e veículos.
+            </p>
+          </div>
+
+          <!-- Cartão 2: Onde há Perigo -->
+          <div class="rounded-3xl bg-abyss-950/70 border border-signal-coral/40 p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-2xl bg-signal-coral/15 border border-signal-coral/40 flex items-center justify-center text-signal-coral">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2 15c2 0 3-2 5-2s3 2 5 2 3-2 5-2 3 2 5 2M2 19c2 0 3-2 5-2s3 2 5 2 3-2 5-2 3 2 5 2" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v5m0 3h.01" />
+                </svg>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-signal-coral/15 text-signal-coral text-xs font-semibold">
+                2. Onde há Perigo
+              </span>
+            </div>
+            <h3 class="text-base font-semibold text-white">
+              Canal da Av. das Águas lotado
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              O canal está quase transbordando. Afaste-se imediatamente das margens e das ruas próximas.
+            </p>
+          </div>
+
+          <!-- Cartão 3: O que Fazer -->
+          <div class="rounded-3xl bg-abyss-950/70 border border-petrol-300/35 p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-2xl bg-petrol-300/15 border border-petrol-300/35 flex items-center justify-center text-petrol-300">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-petrol-300/15 text-petrol-300 text-xs font-semibold">
+                3. O que Fazer
+              </span>
+            </div>
+            <h3 class="text-base font-semibold text-white">
+              Vá para um lugar alto e seguro
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Os abrigos estão abertos e prontos para receber você. Se não conseguir sair, peça ajuda aos bombeiros.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+          <button
+            type="button"
+            onclick="switchTab('abrigos')"
+            class="px-6 py-3.5 rounded-full bg-petrol-300 hover:brightness-110 text-abyss-950 font-semibold text-sm transition inline-flex items-center justify-center gap-2.5"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span>Ver Abrigos Seguros Perto de Mim</span>
+          </button>
+          <button
+            type="button"
+            onclick="switchTab('socorro')"
+            class="px-6 py-3.5 rounded-full bg-signal-coral/20 hover:bg-signal-coral/30 border border-signal-coral/45 text-white font-semibold text-sm transition inline-flex items-center justify-center gap-2.5"
+          >
+            <svg class="w-4 h-4 text-signal-coral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span>Preciso de Ajuda Agora</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- VISÃO DETALHADA PARA A DEFESA CIVIL (MANTIDA INTEGRALMENTE) -->
+      <div id="climaCivilView" class="hidden glass-shell rounded-[32px] p-5 sm:p-8 space-y-6">
+        
+        <!-- Cabeçalho da Aba -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+          <div>
+            <span class="text-xs font-semibold tracking-wider uppercase text-petrol-300">
+              Monitoramento Hidrometeorológico
+            </span>
+            <h2 class="text-xl sm:text-2xl font-semibold text-white mt-1">
+              Previsão Climática &amp; Rede de Sensores
+            </h2>
+          </div>
+          <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-petrol-700/25 border border-petrol-300/30 text-xs text-petrol-300 font-medium self-start">
+            <span class="w-2 h-2 rounded-full bg-petrol-300"></span>
+            Sensores acionados preventivamente 2h antes da chuva
+          </div>
+        </div>
+
+        <!-- Grade Superior: Dados Meteorológicos & Balanço Entrada x Escoamento -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Dados Meteorológicos Oficiais e Locais -->
+          <div class="lg:col-span-7 rounded-3xl bg-abyss-950/65 border border-white/10 p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                Dados Meteorológicos Oficiais e Locais
+              </span>
+              <span id="climaChuvaStatus" class="text-xs text-signal-amber font-semibold">Chuva Confirmada</span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 tabular">
+              <div class="p-3.5 rounded-2xl bg-abyss-900/80 border border-white/5">
+                <span id="climaVolumeLabel" class="text-[11px] text-slate-400 block">Volume Atual</span>
+                <span id="climaVolume" class="text-lg font-semibold text-white mt-1 block">48 mm/h</span>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-abyss-900/80 border border-white/5">
+                <span class="text-[11px] text-slate-400 block">Intensidade</span>
+                <span id="climaIntensidade" class="text-lg font-semibold text-signal-amber mt-1 block">Muito Forte</span>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-abyss-900/80 border border-white/5">
+                <span id="climaDuracaoLabel" class="text-[11px] text-slate-400 block">Duração Est.</span>
+                <span id="climaDuracao" class="text-lg font-semibold text-white mt-1 block">02h 15m</span>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-abyss-900/80 border border-white/5">
+                <span id="climaAcumuladoLabel" class="text-[11px] text-slate-400 block">Acumulado 6h</span>
+                <span id="climaAcumulado" class="text-lg font-semibold text-petrol-300 mt-1 block">74,2 mm</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparativo: Volume de Entrada vs. Capacidade de Escoamento -->
+          <div class="lg:col-span-5 rounded-3xl bg-abyss-950/65 border border-white/10 p-5 flex flex-col justify-between space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                Entrada vs. Escoamento
+              </span>
+              <span id="fluxoTitulo" class="text-xs font-bold text-signal-coral tabular text-right">96% Limite</span>
+            </div>
+
+            <div class="space-y-3 tabular">
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span id="fluxoEntradaLabel" class="text-slate-300">Volume de Entrada de Água</span>
+                  <span id="fluxoEntrada" class="text-white font-semibold">18,4 m³/s</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-abyss-900 overflow-hidden">
+                  <div id="fluxoEntradaBarra" class="h-full rounded-full bg-signal-coral" style="width: 96%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs mb-1">
+                  <span id="fluxoSaidaLabel" class="text-slate-300">Capacidade Máxima de Escoamento</span>
+                  <span id="fluxoSaida" class="text-petrol-300 font-semibold">19,1 m³/s</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-abyss-900 overflow-hidden">
+                  <div id="fluxoSaidaBarra" class="h-full rounded-full bg-petrol-300" style="width: 100%"></div>
+                </div>
+              </div>
+            </div>
+
+            <p id="fluxoNota" class="text-[11px] text-slate-400 leading-relaxed">
+              Quando o volume de entrada supera a capacidade de escoamento, alertas preventivos são emitidos minutos antes do transbordamento.
+            </p>
+          </div>
+        </div>
+
+        <!-- Lista Minimalista de Sensores (Bueiros, Canais e Barragens) -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              Sensores de Bueiros, Canais e Barragens
+            </h3>
+            <span id="sensorRoleNote" class="text-xs text-slate-400">
+              Telemetria em tempo real
+            </span>
+          </div>
+
+          <div id="sensorsListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Preenchido via JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- ABA 03: ABRIGOS, PRONTO-SOCORROS & ROTAS                            -->
+    <!-- =================================================================== -->
+    <section id="view-abrigos" class="hidden flex-1 max-w-7xl w-full mx-auto pt-4 flex flex-col lg:flex-row items-stretch lg:items-start justify-between gap-4 pointer-events-none">
+      
+      <!-- Resumo de Tráfego Urbano Flutuante à Esquerda -->
+      <div class="pointer-events-auto glass-shell rounded-3xl p-4 max-w-sm space-y-2.5 self-start">
+        <!-- Versão Simples Cidadão com Símbolos de Pare / Siga -->
+        <div id="trafficCitizenBox" class="space-y-2.5">
+          <span class="text-xs font-semibold text-petrol-300 block">
+            Por onde passar com segurança
+          </span>
+          <div class="flex items-start gap-2.5 text-xs text-slate-200 bg-signal-coral/10 border border-signal-coral/30 rounded-2xl p-2.5">
+            <span class="w-5 h-5 rounded-full bg-signal-coral/25 text-signal-coral flex items-center justify-center font-bold shrink-0">✕</span>
+            <span><strong class="text-white">Não passe pela Av. das Águas</strong> (risco alto de alagamento).</span>
+          </div>
+          <div class="flex items-start gap-2.5 text-xs text-slate-200 bg-petrol-300/10 border border-petrol-300/30 rounded-2xl p-2.5">
+            <span class="w-5 h-5 rounded-full bg-petrol-300/25 text-petrol-300 flex items-center justify-center font-bold shrink-0">✓</span>
+            <span><strong class="text-white">Siga pela Alameda Colina Sul</strong> (caminho livre e seguro).</span>
+          </div>
+        </div>
+
+        <!-- Versão Detalhada Defesa Civil -->
+        <div id="trafficCivilBox" class="hidden space-y-2.5">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-petrol-300 block">
+            Tráfego Urbano &amp; Bloqueios
+          </span>
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-slate-200">Av. das Águas (Trecho Canal Central)</span>
+              <span class="text-signal-coral font-semibold shrink-0">Alagamento Iminente</span>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-slate-200">Alameda Colina Sul</span>
+              <span class="text-petrol-300 font-semibold shrink-0">Fluxo Livre</span>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-slate-200">Via Expressa Oeste</span>
+              <span class="text-petrol-300 font-semibold shrink-0">Fluxo Livre</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel Lateral Direito: Abrigos & Pronto-Socorros Interativos -->
+      <div class="pointer-events-auto glass-shell rounded-[32px] p-5 sm:p-6 w-full lg:w-[440px] max-h-[76vh] overflow-y-auto space-y-5">
+        <div>
+          <span id="abrigosPanelEyebrow" class="text-[11px] font-semibold uppercase tracking-wider text-petrol-300">
+            Locais Seguros Perto de Você
+          </span>
+          <h2 id="abrigosPanelTitle" class="text-lg font-semibold text-white mt-0.5">
+            Abrigos e Hospitais Abertos
+          </h2>
+          <p id="abrigosPanelDesc" class="text-xs text-slate-300 mt-1">
+            Toque em um local abaixo para ver o caminho seguro no mapa.
+          </p>
+        </div>
+
+        <!-- Lista de Abrigos -->
+        <div class="space-y-2.5">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+            Abrigos Seguros (Lugares Altos)
+          </span>
+          <div id="sheltersCardsList" class="space-y-2.5"></div>
+        </div>
+
+        <!-- Lista de Pronto-Socorros -->
+        <div class="space-y-2.5 pt-2 border-t border-white/10">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
+            Pronto-Socorros e Hospitais 24h
+          </span>
+          <div id="hospitalsCardsList" class="space-y-2.5"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- ABA 04: SOCORRO & RESGATE (REGISTRO ÚNICO + DESPACHO DEFESA CIVIL)  -->
+    <!-- =================================================================== -->
+    <section id="view-socorro" class="hidden flex-1 max-w-7xl w-full mx-auto pt-4 flex flex-col lg:flex-row items-stretch lg:items-start justify-end gap-4 pointer-events-none">
+      
+      <!-- CONSOLE CIDADÃO: REGISTRO ÚNICO DE ALERTA SOS (SIMPLIFICADO + SÍMBOLOS) -->
+      <div id="socorroCitizenPanel" class="pointer-events-auto glass-shell rounded-[32px] p-6 sm:p-7 w-full lg:w-[500px] space-y-5">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-signal-coral/20 border border-signal-coral/45 flex items-center justify-center text-signal-coral shrink-0">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </div>
+            <div>
+              <span class="text-xs font-semibold uppercase tracking-wider text-signal-coral">
+                Bombeiros e Defesa Civil
+              </span>
+              <h2 class="text-xl font-semibold text-white mt-0.5">
+                Pedir Ajuda de Emergência
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESTADO A: FORMULÁRIO DISPONÍVEL (QUANDO AINDA NÃO ENVIOU ALERTA) -->
+        <div id="citizenSosFormBox" class="space-y-4">
+          <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+            Escolha o que está acontecendo e aperte o botão vermelho. Os bombeiros vão receber sua localização na hora.
+          </p>
+
+          <!-- Resumo Simples da Localização com Ícones -->
+          <div class="rounded-2xl bg-abyss-950/75 border border-white/10 p-4 space-y-2.5 text-xs">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-300 inline-flex items-center gap-2">
+                <svg class="w-4 h-4 text-petrol-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <circle cx="12" cy="11" r="3" />
+                </svg>
+                <span>Onde você está:</span>
+              </span>
+              <span class="text-white font-medium text-right">Av. das Águas • Setor Central</span>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-slate-300 inline-flex items-center gap-2">
+                <svg class="w-4 h-4 text-signal-coral shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+                <span>Perigo próximo:</span>
+              </span>
+              <span class="text-signal-coral font-semibold text-right">Canal Central (280 m)</span>
+            </div>
+          </div>
+
+          <!-- Seleção Simples da Situação com Símbolos -->
+          <div class="space-y-2">
+            <label class="text-xs font-medium text-slate-200 block">Toque no que está acontecendo:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <button
+                type="button"
+                onclick="selectSosCondition('Ilhado próximo à via alagada', this)"
+                class="sos-cond-btn p-3 rounded-2xl bg-petrol-300/20 border border-petrol-300/50 text-petrol-300 font-medium text-left transition flex items-center gap-2.5"
+              >
+                <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2 15c2 0 3-2 5-2s3 2 5 2 3-2 5-2 3 2 5 2M2 19c2 0 3-2 5-2s3 2 5 2 3-2 5-2 3 2 5 2" />
+                </svg>
+                <span>Estou ilhado perto da água</span>
+              </button>
+              <button
+                type="button"
+                onclick="selectSosCondition('Água invadindo imóvel / veículo', this)"
+                class="sos-cond-btn p-3 rounded-2xl bg-abyss-950/70 border border-white/10 text-slate-200 hover:text-white text-left transition flex items-center gap-2.5"
+              >
+                <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10h14V10" />
+                </svg>
+                <span>Água entrando em casa ou carro</span>
+              </button>
+              <button
+                type="button"
+                onclick="selectSosCondition('Pessoa com mobilidade reduzida', this)"
+                class="sos-cond-btn p-3 rounded-2xl bg-abyss-950/70 border border-white/10 text-slate-200 hover:text-white text-left transition flex items-center gap-2.5"
+              >
+                <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="7" r="3" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 21v-2a7 7 0 0114 0v2" />
+                </svg>
+                <span>Ajuda para criança, idoso ou PcD</span>
+              </button>
+              <button
+                type="button"
+                onclick="selectSosCondition('Emergência médica no alagamento', this)"
+                class="sos-cond-btn p-3 rounded-2xl bg-abyss-950/70 border border-white/10 text-slate-200 hover:text-white text-left transition flex items-center gap-2.5"
+              >
+                <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                </svg>
+                <span>Emergência de saúde</span>
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onclick="submitCitizenSosAlert()"
+            class="w-full py-4 rounded-full bg-signal-coral hover:bg-red-500 text-white font-semibold text-sm shadow-[0_14px_34px_rgba(255,59,92,0.35)] transition-all duration-300 flex items-center justify-center gap-2.5"
+          >
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+            <span>Enviar Pedido de Ajuda</span>
+          </button>
+        </div>
+
+        <!-- ESTADO B: BLOQUEADO APÓS ENVIO (REGISTRO ÚNICO ATIVO) -->
+        <div id="citizenSosLockedBox" class="hidden space-y-4">
+          <div class="rounded-2xl bg-signal-coral/15 border border-signal-coral/40 p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span id="lockedProtocolBadge" class="text-xs font-bold text-signal-coral uppercase tracking-wider inline-flex items-center gap-1.5">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Pedido #HC-2026-884</span>
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full bg-abyss-950/80 text-[11px] font-semibold text-petrol-300">
+                ✓ Enviado
+              </span>
+            </div>
+            <p class="text-sm font-semibold text-white">
+              Seu pedido de ajuda já foi registrado! Não precisa enviar outro.
+            </p>
+            <p id="lockedStatusDetail" class="text-xs text-slate-200 leading-relaxed">
+              Os bombeiros e a Defesa Civil já receberam sua localização exata e o melhor caminho para chegar até você.
+            </p>
+          </div>
+
+          <!-- Resumo do Chamado Registrado -->
+          <div class="rounded-2xl bg-abyss-950/75 border border-white/10 p-4 space-y-2.5 text-xs tabular">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Horário do pedido:</span>
+              <span id="lockedTimeVal" class="text-white font-medium">--:--</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Situação informada:</span>
+              <span id="lockedCondVal" class="text-white font-medium text-right">--</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Andamento:</span>
+              <span id="lockedOpStatusVal" class="text-signal-amber font-semibold text-right">Recebido pelos Bombeiros</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            disabled
+            class="w-full py-3.5 rounded-full bg-white/5 border border-white/10 text-slate-400 font-medium text-xs sm:text-sm cursor-not-allowed"
+          >
+            Pedido Ativo • Aguardando Resgate
+          </button>
+
+          <!-- Link Discreto para Reiniciar Simulação -->
+          <div class="pt-1 text-center">
+            <button
+              type="button"
+              onclick="resetSosSimulation()"
+              class="text-[11px] text-slate-400 hover:text-petrol-300 underline transition"
+            >
+              Reiniciar simulação
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONSOLE DEFESA CIVIL: RECEBIMENTO IMEDIATO E DESPACHO DE VIATURAS -->
+      <div id="socorroCivilPanel" class="hidden pointer-events-auto glass-shell rounded-[32px] p-6 sm:p-7 w-full lg:w-[510px] space-y-5">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-petrol-300">
+              Central de Operações • Defesa Civil
+            </span>
+            <h2 class="text-xl font-semibold text-white mt-1">
+              Despacho de Socorro &amp; Bombeiros
+            </h2>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-petrol-300/15 border border-petrol-300/30 text-[11px] font-semibold text-petrol-300">
+            Tempo Real
+          </span>
+        </div>
+
+        <!-- Quando NÃO há chamado ativo do cidadão -->
+        <div id="civilNoSosBox" class="rounded-2xl bg-abyss-950/70 border border-white/10 p-5 text-center space-y-2">
+          <p class="text-sm font-medium text-white">
+            Nenhum chamado SOS pendente no momento.
+          </p>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Assim que um cidadão acionar o alerta de emergência, a geolocalização, o tráfego urbano e a rota de resgate aparecerão aqui imediatamente.
+          </p>
+        </div>
+
+        <!-- Quando HÁ chamado ativo enviado pelo cidadão -->
+        <div id="civilActiveSosBox" class="hidden space-y-4">
+          <div class="glass-card-urgent rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <span id="civilSosProtocol" class="text-xs font-bold text-signal-coral uppercase tracking-wider">
+                ALERTA RECEBIDO • #HC-2026-884
+              </span>
+              <span id="civilSosTime" class="text-xs text-slate-300 tabular">17:14</span>
+            </div>
+
+            <div>
+              <h3 id="civilSosCitizenName" class="text-base font-semibold text-white">
+                Solicitante: Mariana Costa
+              </h3>
+              <p id="civilSosLocation" class="text-xs text-slate-200 mt-0.5">
+                Av. das Águas, Quadra 14 — Setor Central (280 m do Canal Central)
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-abyss-950/80 border border-white/10 p-3 space-y-2 text-xs tabular">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Setor &amp; Referência</span>
+                <span class="text-white font-medium">Setor Central • Ponto #C-14</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Situação</span>
+                <span id="civilSosCondition" class="text-signal-amber font-medium text-right">--</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Tráfego &amp; Rota Bombeiros</span>
+                <span class="text-petrol-300 font-medium text-right">Base Leste → Corredor Livre (4 min)</span>
+              </div>
+            </div>
+
+            <!-- Controles de Despacho -->
+            <div class="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+              <button
+                id="civilDispatchActionBtn"
+                type="button"
+                onclick="dispatchFireDeptUnit()"
+                class="flex-1 py-3 px-4 rounded-full bg-petrol-300 hover:brightness-110 text-abyss-950 font-semibold text-xs sm:text-sm transition"
+              >
+                Despachar Corpo de Bombeiros (ABT-04)
+              </button>
+              <button
+                type="button"
+                onclick="focusSvgPoint(540, 445)"
+                class="py-3 px-4 rounded-full bg-white/10 hover:bg-white/15 text-white text-xs font-medium transition"
+              >
+                Focar no Mapa
+              </button>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button
+              type="button"
+              onclick="resetSosSimulation()"
+              class="text-[11px] text-slate-400 hover:text-petrol-300 underline transition"
+            >
+              Encerrar ocorrência / Reiniciar simulação
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TOAST DISCRETO PARA FEEDBACK ARQUITETÔNICO                            -->
+  <!-- ===================================================================== -->
+  <div
+    id="systemToast"
+    class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass-pill rounded-full px-5 py-2.5 text-xs sm:text-sm text-white font-medium flex items-center gap-2.5 shadow-2xl"
+  >
+    <span class="w-2 h-2 rounded-full bg-petrol-300 shrink-0"></span>
+    <span id="systemToastText"></span>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- PAINEL / INSPECTOR MCP (BASE DE INTEGRAÇÃO PARA O HACKATHON)          -->
+  <!-- ===================================================================== -->
+  <aside
+    id="mcpInspectorDrawer"
+    class="hidden fixed inset-0 z-50 bg-abyss-950/70 backdrop-blur-md flex items-center justify-center p-4"
+  >
+    <div class="glass-shell rounded-[32px] w-full max-w-2xl p-6 sm:p-7 space-y-5 max-h-[88vh] overflow-y-auto">
+      <div class="flex items-start justify-between gap-3 border-b border-white/10 pb-4">
+        <div>
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-petrol-300">
+            Arquitetura Hackathon • Model Context Protocol
+          </span>
+          <h3 class="text-lg sm:text-xl font-semibold text-white mt-0.5">
+            Conector &amp; Inspetor MCP (JSON-RPC 2.0)
+          </h3>
+        </div>
+        <button
+          type="button"
+          onclick="toggleMcpDrawer(false)"
+          class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white flex items-center justify-center text-sm transition"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Configuração do Endpoint do Servidor MCP -->
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+        <div class="sm:col-span-8">
+          <label for="mcpEndpointInput" class="block text-xs font-medium text-slate-300 mb-1.5">
+            URL do Servidor MCP (Streamable HTTP)
+          </label>
+          <input
+            id="mcpEndpointInput"
+            type="text"
+            value="http://127.0.0.1:8000/mcp"
+            class="w-full px-3.5 py-2.5 rounded-2xl bg-abyss-950/85 border border-white/10 focus:border-petrol-300/60 focus:outline-none text-xs text-white"
+          />
+        </div>
+        <div class="sm:col-span-4 flex gap-2">
+          <button
+            type="button"
+            onclick="setMcpConnectionMode('live')"
+            class="flex-1 py-2.5 px-3 rounded-2xl bg-petrol-300 hover:brightness-110 text-abyss-950 font-semibold text-xs transition"
+          >
+            Conectar Live
+          </button>
+          <button
+            type="button"
+            onclick="setMcpConnectionMode('mock')"
+            class="py-2.5 px-3 rounded-2xl bg-white/10 hover:bg-white/15 text-slate-200 font-medium text-xs transition"
+          >
+            Simulado
+          </button>
+        </div>
+      </div>
+
+      <p id="mcpConexaoDetalhe" class="text-[11px] text-slate-400 -mt-2">
+        Inicie o MCP Server (iniciar.bat) e clique em "Conectar Live" para usar os dados reais.
+      </p>
+
+      <!-- Recursos e Ferramentas MCP Mapeados do Projeto -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div class="rounded-2xl bg-abyss-950/75 border border-white/10 p-3.5 space-y-1.5">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-petrol-300 block">
+            MCP Resources (Leitura de Contexto)
+          </span>
+          <ul id="mcpResourcesList" class="space-y-1 text-slate-300 font-mono text-[11px] break-all">
+            <li>• cidade://situacao-atual</li>
+            <li>• cidade://alertas-ativos</li>
+            <li>• cidade://areas-risco</li>
+            <li>• cidade://sensores</li>
+            <li>• cidade://barragens</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl bg-abyss-950/75 border border-white/10 p-3.5 space-y-1.5">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-petrol-300 block">
+            MCP Tools (somente leitura)
+          </span>
+          <ul id="mcpToolsList" class="space-y-1 text-slate-300 font-mono text-[11px] break-all max-h-40 overflow-y-auto">
+            <li>• analisar_risco()</li>
+            <li>• consultar_situacao_cidade()</li>
+            <li>• consultar_sensores()</li>
+            <li>• consultar_canais()</li>
+            <li>• ... (conecte para ver as 13)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Log em Tempo Real das Chamadas JSON-RPC 2.0 -->
+      <div class="space-y-2">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs font-medium text-slate-300">Log de Mensagens MCP (tools/call &amp; resources/read)</span>
+          <div class="flex items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onclick="executarAnaliseDeRiscoMcp()"
+              class="text-xs text-petrol-300 hover:underline font-medium"
+            >
+              Executar analisar_risco
+            </button>
+            <button
+              type="button"
+              onclick="testMcpResourceSync()"
+              class="text-xs text-petrol-300 hover:underline font-medium"
+            >
+              Testar resources/read
+            </button>
+          </div>
+        </div>
+        <pre
+          id="mcpRpcLogOutput"
+          class="rounded-2xl bg-abyss-950/90 border border-white/10 p-3.5 text-[11px] text-petrol-300 font-mono overflow-x-auto max-h-44 leading-relaxed"
+        >// Aguardando chamadas MCP da interface...</pre>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================================================================== -->
+  <!-- LÓGICA COMPLETA: AUTENTICAÇÃO, MAPA VETORIAL, ESTADO SOS & PONTE MCP  -->
+  <!-- ===================================================================== -->
+  <script>
+    const STORAGE_KEY = 'techzone_state_v1';
+
+    // A integração com o MCP Server fica em js/mcp.js (carregado no fim da página).
+
+    // Destinos Seguros (Abrigos e Pronto-Socorros)
+    const DESTINATIONS = [
+      {
+        id: 'abrigo_sul',
+        category: 'abrigo',
+        name: 'Abrigo Escola Colina Sul',
+        sector: 'Colina Sul • Zona Alta',
+        distance: '650 m',
+        eta: '4 min',
+        statusText: '185 vagas livres',
+        x: 460,
+        y: 625,
+        routePoints: '540,445 540,540 460,540 460,625'
+      },
+      {
+        id: 'abrigo_norte',
+        category: 'abrigo',
+        name: 'Ginásio Municipal Norte',
+        sector: 'Setor Norte • Área Elevada',
+        distance: '1,4 km',
+        eta: '7 min',
+        statusText: '240 vagas livres',
+        x: 460,
+        y: 145,
+        routePoints: '540,445 540,360 460,360 460,145'
+      },
+      {
+        id: 'abrigo_oeste',
+        category: 'abrigo',
+        name: 'Centro Comunitário Oeste',
+        sector: 'Distrito Oeste • Seguro',
+        distance: '1,1 km',
+        eta: '6 min',
+        statusText: '122 vagas livres',
+        x: 205,
+        y: 540,
+        routePoints: '540,445 540,540 205,540'
+      },
+      {
+        id: 'ps_central',
+        category: 'hospital',
+        name: 'Pronto-Socorro Central 24h',
+        sector: 'Setor Central • Corredor Livre',
+        distance: '820 m',
+        eta: '5 min',
+        statusText: 'Atendimento 24h',
+        x: 590,
+        y: 615,
+        routePoints: '540,445 540,540 590,540 590,615'
+      },
+      {
+        id: 'ps_leste',
+        category: 'hospital',
+        name: 'Hospital Regional Leste',
+        sector: 'Vale Leste • Via Expressa',
+        distance: '1,6 km',
+        eta: '8 min',
+        statusText: 'Emergência Ativa',
+        x: 960,
+        y: 460,
+        routePoints: '540,445 590,445 590,460 960,460'
+      }
+    ];
+
+    // Sensores Hidrológicos (Bueiros, Canais e Barragens)
+    const SENSORS_DATA = [
+      {
+        id: 'CAN-01',
+        name: 'Canal Central • Trecho Av. das Águas',
+        type: 'Canal de Drenagem',
+        capacity: '96%',
+        flow: '18,4 / 19,1 m³/s',
+        status: 'critical',
+        statusLabel: 'Sobrecarga Crítica • Transbordo em 7 min',
+        x: 505,
+        y: 382
+      },
+      {
+        id: 'BUE-08',
+        name: 'Bueiro Inteligente Setor Central #08',
+        type: 'Bueiro Coletor',
+        capacity: '91%',
+        flow: '4,1 / 4,5 m³/s',
+        status: 'warning',
+        statusLabel: 'Atenção • Escoamento Elevado',
+        x: 540,
+        y: 445
+      },
+      {
+        id: 'BAR-01',
+        name: 'Barragem Reservatório Norte • Comporta 01',
+        type: 'Barragem / Reservatório',
+        capacity: '82%',
+        flow: 'Estável',
+        status: 'normal',
+        statusLabel: 'Operação Normal',
+        x: 215,
+        y: 175
+      },
+      {
+        id: 'CAN-02',
+        name: 'Canal Leste • Corredor Vale Leste',
+        type: 'Canal de Drenagem',
+        capacity: '71%',
+        flow: '11,2 / 15,7 m³/s',
+        status: 'normal',
+        statusLabel: 'Escoamento Controlado',
+        x: 935,
+        y: 360
+      },
+      {
+        id: 'SEN-04',
+        name: 'Sensor #S-04 • Drenagem Setor Leste',
+        type: 'Sensor de Nível',
+        capacity: 'Sem leitura',
+        flow: 'Falha de Telemetria',
+        status: 'fault',
+        statusLabel: 'Falha Técnica — Vistoria Defesa Civil Requerida',
+        x: 740,
+        y: 360
+      }
+    ];
+
+    // Estado Global da Aplicação
+    let appState = {
+      loggedIn: false,
+      loginSelectedRole: 'citizen',
+      role: 'citizen', // 'citizen' | 'civil'
+      isCitizenInRiskArea: true, // Indica se a geolocalização do cidadão está dentro de uma área de risco
+      activeTab: 'painel',
+      selectedDestId: 'abrigo_sul',
+      selectedSosCondition: 'Ilhado próximo à via alagada',
+      sosAlert: null
+    };
+
+    // Estado de Pan & Zoom do Mapa Vetorial SVG
+    let mapTransform = {
+      scale: 1,
+      x: 0,
+      y: 0,
+      isDragging: false,
+      startX: 0,
+      startY: 0
+    };
+
+    let toastTimeout = null;
+
+    function loadPersistedSos() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.sosAlert) {
+            appState.sosAlert = parsed.sosAlert;
+          }
+        }
+      } catch (err) {
+        // Ignora restrições de armazenamento local
+      }
+    }
+
+    function savePersistedSos() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ sosAlert: appState.sosAlert }));
+      } catch (err) {
+        // Ignora restrições de armazenamento local
+      }
+    }
+
+    // =====================================================================
+    // 1. MAPA VETORIAL GENÉRICO: INTERAÇÃO (PAN, ZOOM E MARCADORES)
+    // =====================================================================
+    function initVectorMapControls() {
+      const viewport = document.getElementById('mapViewport');
+      if (!viewport) return;
+
+      viewport.addEventListener('mousedown', (e) => {
+        if (e.target.closest('button')) return;
+        mapTransform.isDragging = true;
+        mapTransform.startX = e.clientX - mapTransform.x;
+        mapTransform.startY = e.clientY - mapTransform.y;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!mapTransform.isDragging) return;
+        mapTransform.x = e.clientX - mapTransform.startX;
+        mapTransform.y = e.clientY - mapTransform.startY;
+        applyMapTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        mapTransform.isDragging = false;
+      });
+
+      // Suporte Touch para Dispositivos Móveis
+      viewport.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          mapTransform.isDragging = true;
+          mapTransform.startX = e.touches[0].clientX - mapTransform.x;
+          mapTransform.startY = e.touches[0].clientY - mapTransform.y;
+        }
+      }, { passive: true });
+
+      viewport.addEventListener('touchmove', (e) => {
+        if (!mapTransform.isDragging || e.touches.length !== 1) return;
+        mapTransform.x = e.touches[0].clientX - mapTransform.startX;
+        mapTransform.y = e.touches[0].clientY - mapTransform.startY;
+        applyMapTransform();
+      }, { passive: true });
+
+      viewport.addEventListener('touchend', () => {
+        mapTransform.isDragging = false;
+      });
+
+      // Zoom com scroll do mouse
+      viewport.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.12 : -0.12;
+        adjustMapZoom(delta);
+      }, { passive: false });
+    }
+
+    function applyMapTransform() {
+      const group = document.getElementById('mapSceneGroup');
+      if (group) {
+        group.setAttribute(
+          'transform',
+          `translate(${mapTransform.x}, ${mapTransform.y}) scale(${mapTransform.scale})`
+        );
+      }
+    }
+
+    function adjustMapZoom(delta) {
+      mapTransform.scale = Math.min(2.1, Math.max(0.75, +(mapTransform.scale + delta).toFixed(2)));
+      applyMapTransform();
+    }
+
+    function resetMapTransform() {
+      mapTransform.scale = 1;
+      mapTransform.x = 0;
+      mapTransform.y = 0;
+      applyMapTransform();
+    }
+
+    function focusSvgPoint(targetX, targetY) {
+      mapTransform.scale = 1.25;
+      mapTransform.x = 600 - targetX * mapTransform.scale;
+      mapTransform.y = 400 - targetY * mapTransform.scale;
+      applyMapTransform();
+    }
+
+    function renderVectorMapLayers() {
+      const isCivil = appState.role === 'civil';
+
+      // Camadas exclusivas da Defesa Civil (Densidade Populacional + Nós Técnicos)
+      document.getElementById('svgCivilDensityLayer').classList.toggle('hidden', !isCivil);
+      document.getElementById('svgCivilNodesLayer').classList.toggle('hidden', !isCivil);
+
+      // Rota de Resgate dos Bombeiros (visível quando há SOS ativo)
+      const rescueLine = document.getElementById('svgRescueRouteLine');
+      rescueLine.classList.toggle('hidden', !(isCivil && appState.sosAlert));
+
+      // Título do marcador do cidadão conforme perfil
+      const citizenTitle = document.getElementById('svgCitizenPinTitle');
+      if (citizenTitle) {
+        citizenTitle.textContent = isCivil ? 'Cidadão em Área de Risco' : 'Sua Localização Atual';
+      }
+
+      // Atualizar linha da rota segura ativa
+      const activeDest = DESTINATIONS.find((d) => d.id === appState.selectedDestId) || DESTINATIONS[0];
+      const safeRouteLine = document.getElementById('svgSafeRouteLine');
+      if (safeRouteLine && activeDest) {
+        safeRouteLine.setAttribute('points', activeDest.routePoints);
+      }
+
+      // Renderizar marcadores de Abrigos e Pronto-Socorros no SVG
+      const destLayer = document.getElementById('svgDestinationsLayer');
+      if (!destLayer) return;
+
+      destLayer.innerHTML = DESTINATIONS.map((dest) => {
+        const isSelected = dest.id === appState.selectedDestId;
+        const pinColor = dest.category === 'abrigo' ? '#38D9C6' : '#249E96';
+        const showLabel = isSelected || appState.activeTab === 'abrigos';
+
+        return `
+          <g transform="translate(${dest.x}, ${dest.y})" class="cursor-pointer" onclick="selectPainelRoute('${dest.id}')">
+            ${isSelected ? `<circle r="17" fill="${pinColor}" opacity="0.3" class="svg-pulse-ring" />` : ''}
+            <circle r="${isSelected ? 7.5 : 6}" fill="${pinColor}" stroke="#050B16" stroke-width="2.5" />
+            ${
+              showLabel
+                ? `
+                  <g transform="translate(13, -18)">
+                    <rect width="194" height="38" rx="10" fill="rgba(10,21,41,0.92)" stroke="rgba(56,217,198,0.45)" />
+                    <text x="10" y="16" fill="#F1F7FA" font-size="10.5" font-weight="600">${dest.name}</text>
+                    <text x="10" y="30" fill="#38D9C6" font-size="9.5">${dest.statusText} • ${dest.distance}</text>
+                  </g>
+                `
+                : ''
+            }
+          </g>
+        `;
+      }).join('');
+    }
+
+    // =====================================================================
+    // 2. AUTENTICAÇÃO E TROCA DE PERFIL
+    // =====================================================================
+    function selectLoginRole(role) {
+      appState.loginSelectedRole = role;
+      const btnCitizen = document.getElementById('loginRoleCitizen');
+      const btnCivil = document.getElementById('loginRoleCivil');
+      const label = document.getElementById('loginIdentifierLabel');
+      const input = document.getElementById('loginIdentifier');
+      const hint = document.getElementById('loginRoleHint');
+
+      if (role === 'citizen') {
+        btnCitizen.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 bg-petrol-300 text-abyss-950 shadow-md';
+        btnCivil.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 text-slate-300 hover:text-white';
+        label.textContent = 'E-mail ou CPF do Cidadão';
+        input.value = 'mariana.costa@cidadao.gov.br';
+        hint.innerHTML = '<span class="text-petrol-300 font-semibold block mb-0.5">Simulação de Área de Risco Ativa:</span>Sua geolocalização está na Av. das Águas (Setor Central), a 280 m de um canal com previsão de transbordamento iminente.';
+      } else {
+        btnCivil.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 bg-petrol-300 text-abyss-950 shadow-md';
+        btnCitizen.className = 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 text-slate-300 hover:text-white';
+        label.textContent = 'Matrícula Funcional • Defesa Civil';
+        input.value = 'agente.silva@defesacivil.gov.br';
+        hint.innerHTML = '<span class="text-petrol-300 font-semibold block mb-0.5">Acesso Operacional • Defesa Civil:</span>Visualização de áreas de maior risco, densidade populacional por região, falhas em sensores e despacho imediato de SOS.';
+      }
+    }
+
+    function handleLoginSubmit(event) {
+      event.preventDefault();
+      appState.loggedIn = true;
+      appState.role = appState.loginSelectedRole;
+      appState.activeTab = 'painel';
+
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainAppShell').classList.remove('hidden');
+
+      resetMapTransform();
+      syncAllUI();
+    }
+
+    function logoutToLogin() {
+      appState.loggedIn = false;
+      if (window.Assistente) window.Assistente.fechar();
+      document.getElementById('mainAppShell').classList.add('hidden');
+      document.getElementById('urgencyVignette').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+
+    // =====================================================================
+    // 3. NAVEGAÇÃO ENTRE AS 4 ABAS E SINCRONIZAÇÃO DE ESTADO
+    // =====================================================================
+    function switchTab(tabId) {
+      appState.activeTab = tabId;
+
+      const tabs = ['painel', 'clima', 'abrigos', 'socorro'];
+      tabs.forEach((t) => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (t === tabId) {
+          view.classList.remove('hidden');
+          btn.classList.add('bg-petrol-300/15', 'text-petrol-300', 'border', 'border-petrol-300/35');
+          btn.classList.remove('text-slate-300/80', 'hover:text-white', 'hover:bg-white/5');
+        } else {
+          view.classList.add('hidden');
+          btn.classList.remove('bg-petrol-300/15', 'text-petrol-300', 'border', 'border-petrol-300/35');
+          btn.classList.add('text-slate-300/80', 'hover:text-white', 'hover:bg-white/5');
+        }
+      });
+
+      renderVectorMapLayers();
+    }
+
+    function syncAllUI() {
+      const isCitizen = appState.role === 'citizen';
+
+      // Rótulos e símbolos das abas: visuais e diretos para Cidadão, técnicos para Defesa Civil
+      document.getElementById('tabLabel-painel').textContent = isCitizen ? 'Início' : '01. Painel';
+      document.getElementById('tabLabel-clima').textContent = isCitizen ? 'Chuva e Alertas' : '02. Clima & Sensores';
+      document.getElementById('tabLabel-abrigos').textContent = isCitizen ? 'Abrigos Seguros' : '03. Abrigos & Rotas';
+      document.getElementById('tabLabel-socorro').textContent = isCitizen ? 'Pedir Ajuda' : '04. Socorro';
+
+      document.getElementById('tabIcon-painel').innerHTML = isCitizen
+        ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>'
+        : '';
+      document.getElementById('tabIcon-clima').innerHTML = isCitizen
+        ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 16.2A4.5 4.5 0 0017.5 8h-1.8A7 7 0 104 14.9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14v6"/></svg>'
+        : '';
+      document.getElementById('tabIcon-abrigos').innerHTML = isCitizen
+        ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>'
+        : '';
+      document.getElementById('tabIcon-socorro').innerHTML = isCitizen
+        ? '<svg class="w-4 h-4 text-signal-coral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>'
+        : '';
+
+      // Cabeçalho: Badge de Perfil + Botão do Conector MCP (apenas na Defesa Civil)
+      const roleDot = document.getElementById('headerRoleDot');
+      const roleBadge = document.getElementById('headerRoleBadge');
+      const mcpBtn = document.getElementById('mcpBridgeTriggerBtn');
+      const mcpBtnMobile = document.getElementById('mcpBridgeTriggerBtnMobile');
+      if (mcpBtnMobile) {
+        mcpBtnMobile.classList.toggle('hidden', isCitizen);
+        mcpBtnMobile.classList.toggle('inline-flex', !isCitizen);
+      }
+      if (isCitizen) {
+        roleDot.className = 'w-2 h-2 rounded-full bg-signal-coral';
+        roleBadge.textContent = 'Cidadão';
+        if (mcpBtn) {
+          mcpBtn.classList.add('hidden');
+          mcpBtn.classList.remove('inline-flex');
+        }
+      } else {
+        roleDot.className = 'w-2 h-2 rounded-full bg-petrol-300';
+        roleBadge.textContent = 'Defesa Civil';
+        if (mcpBtn) {
+          mcpBtn.classList.remove('hidden');
+          mcpBtn.classList.add('inline-flex');
+        }
+      }
+
+      // Luz vermelha piscando nas bordas: ativada SOMENTE se o cidadão estiver em área de risco
+      const showUrgencyFrame = appState.loggedIn && isCitizen && appState.isCitizenInRiskArea;
+      document.getElementById('urgencyVignette').classList.toggle('hidden', !showUrgencyFrame);
+
+      // Pílula Climática (Simples para Cidadão | Técnica para Defesa Civil)
+      document.getElementById('weatherPillCitizenSummary').classList.toggle('hidden', !isCitizen);
+      document.getElementById('weatherPillCivilSummary').classList.toggle('hidden', isCitizen);
+      document.getElementById('weatherExpandedCitizen').classList.toggle('hidden', !isCitizen);
+      document.getElementById('weatherExpandedCivil').classList.toggle('hidden', isCitizen);
+
+      // Aba 01 (Painel): Cartões Contextuais e Ações Rápidas
+      document.getElementById('painelCardCitizen').classList.toggle('hidden', !isCitizen);
+      document.getElementById('painelCardCivil').classList.toggle('hidden', isCitizen);
+      document.getElementById('painelSosBtn').classList.toggle('hidden', !isCitizen);
+      document.getElementById('painelCivilDispatchBtn').classList.toggle('hidden', isCitizen);
+
+      // Aba 02 (Clima & Sensores): Orientações Simples vs. Telemetria Completa
+      document.getElementById('climaCitizenView').classList.toggle('hidden', !isCitizen);
+      document.getElementById('climaCivilView').classList.toggle('hidden', isCitizen);
+
+      // Aba 03 (Abrigos & Rotas): Sinalização Direta vs. Tráfego Detalhado
+      document.getElementById('trafficCitizenBox').classList.toggle('hidden', !isCitizen);
+      document.getElementById('trafficCivilBox').classList.toggle('hidden', isCitizen);
+      document.getElementById('abrigosPanelEyebrow').textContent = isCitizen
+        ? 'Locais Seguros Perto de Você'
+        : 'Abrigos, Pronto-Socorros & Rotas';
+      document.getElementById('abrigosPanelTitle').textContent = isCitizen
+        ? 'Abrigos e Hospitais Abertos'
+        : 'Disponibilidade & Rotas Seguras';
+      document.getElementById('abrigosPanelDesc').textContent = isCitizen
+        ? 'Toque em um local abaixo para ver o caminho seguro no mapa.'
+        : 'Selecione um ponto de apoio para traçar a rota segura no mapa.';
+
+      // Aba 04 (Socorro): Console Cidadão vs. Central de Despacho Defesa Civil
+      document.getElementById('socorroCitizenPanel').classList.toggle('hidden', !isCitizen);
+      document.getElementById('socorroCivilPanel').classList.toggle('hidden', isCitizen);
+
+      syncSosStateUI();
+      renderSensorsTab();
+      renderAbrigosTab();
+      switchTab(appState.activeTab);
+      if (window.Assistente) window.Assistente.sincronizarPerfil();
+    }
+
+    // =====================================================================
+    // 4. LÓGICA DE REGISTRO ÚNICO DE SOS & RECEBIMENTO PELA DEFESA CIVIL
+    // =====================================================================
+    function selectSosCondition(conditionText, btnEl) {
+      appState.selectedSosCondition = conditionText;
+      document.querySelectorAll('.sos-cond-btn').forEach((b) => {
+        b.className = 'sos-cond-btn p-3 rounded-2xl bg-abyss-950/70 border border-white/10 text-slate-200 hover:text-white text-left transition flex items-center gap-2.5';
+      });
+      btnEl.className = 'sos-cond-btn p-3 rounded-2xl bg-petrol-300/20 border border-petrol-300/50 text-petrol-300 font-medium text-left transition flex items-center gap-2.5';
+    }
+
+    function handlePainelSosClick() {
+      if (appState.sosAlert) {
+        switchTab('socorro');
+        showToast('Seu pedido de ajuda já está ativo. Acompanhe os detalhes abaixo.');
+        return;
+      }
+      submitCitizenSosAlert();
+      switchTab('socorro');
+    }
+
+    function submitCitizenSosAlert() {
+      if (appState.sosAlert) {
+        showToast('Você já enviou um pedido de ajuda. Não é necessário enviar outro.');
+        return;
+      }
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      appState.sosAlert = {
+        protocol: '#HC-2026-884',
+        citizenName: 'Mariana Costa',
+        locationDesc: 'Av. das Águas, Quadra 14 — Setor Central (280 m do Canal Central)',
+        condition: appState.selectedSosCondition,
+        timestamp: timeStr,
+        status: 'recebido'
+      };
+
+      savePersistedSos();
+      syncSosStateUI();
+      renderVectorMapLayers();
+
+      // Ação de escrita: não passa pelo MCP (somente leitura). No futuro, vai ao backend com login.
+      window.HydroMCP.registrarAcaoLocal('pedido de SOS do cidadão', appState.sosAlert);
+
+      showToast('Pedido de ajuda enviado aos Bombeiros e Defesa Civil!');
+    }
+
+    function dispatchFireDeptUnit() {
+      if (!appState.sosAlert || appState.sosAlert.status === 'despachado') return;
+      appState.sosAlert.status = 'despachado';
+      savePersistedSos();
+      syncSosStateUI();
+      renderVectorMapLayers();
+
+      // Ação de escrita: não passa pelo MCP (somente leitura). No futuro, vai ao backend com login.
+      window.HydroMCP.registrarAcaoLocal('despacho dos bombeiros', {
+        protocol: appState.sosAlert.protocol,
+        unit: 'ABT-04',
+        etaMinutes: 4
+      });
+
+      showToast('Unidade ABT-04 do Corpo de Bombeiros despachada para o resgate!');
+    }
+
+    function resetSosSimulation() {
+      appState.sosAlert = null;
+      savePersistedSos();
+      syncSosStateUI();
+      renderVectorMapLayers();
+      showToast('Simulação reiniciada. Novo pedido de ajuda liberado.');
+    }
+
+    function syncSosStateUI() {
+      const hasSos = Boolean(appState.sosAlert);
+      const isCivil = appState.role === 'civil';
+
+      // Indicador na navegação superior e banner imediato na Defesa Civil
+      document.getElementById('navSosDot').classList.toggle('hidden', !hasSos);
+      document.getElementById('civilUrgentSosBanner').classList.toggle('hidden', !(isCivil && hasSos));
+      if (hasSos) {
+        document.getElementById('civilBannerText').textContent =
+          `${appState.sosAlert.citizenName} • ${appState.sosAlert.condition}`;
+      }
+
+      // Botão SOS no Painel (Cidadão)
+      const painelSosBtn = document.getElementById('painelSosBtn');
+      const painelSosBtnText = document.getElementById('painelSosBtnText');
+      const painelSosIcon = document.getElementById('painelSosIcon');
+
+      if (hasSos) {
+        painelSosBtn.className = 'px-6 py-4 rounded-full bg-abyss-900/95 border border-petrol-300/45 text-petrol-300 font-semibold text-sm flex items-center justify-center gap-3 shadow-xl transition';
+        painelSosIcon.innerHTML = '<svg class="w-5 h-5 text-petrol-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+        painelSosBtnText.textContent = 'Pedido de Ajuda Enviado (Ativo)';
+      } else {
+        painelSosBtn.className = 'px-6 py-4 rounded-full bg-signal-coral hover:bg-red-500 text-white font-semibold text-sm flex items-center justify-center gap-3 shadow-[0_16px_40px_rgba(255,59,92,0.38)] transition-all duration-300';
+        painelSosIcon.innerHTML = '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>';
+        painelSosBtnText.textContent = 'Pedir Ajuda aos Bombeiros';
+      }
+
+      // Contador no Painel (Defesa Civil)
+      document.getElementById('painelCivilSosCount').textContent = hasSos ? '1 urgente' : '0 ativos';
+
+      // Aba 04: Visão Cidadão (Bloqueio Único)
+      document.getElementById('citizenSosFormBox').classList.toggle('hidden', hasSos);
+      document.getElementById('citizenSosLockedBox').classList.toggle('hidden', !hasSos);
+
+      if (hasSos) {
+        const isDispatched = appState.sosAlert.status === 'despachado';
+        document.getElementById('lockedTimeVal').textContent = appState.sosAlert.timestamp;
+        document.getElementById('lockedCondVal').textContent = appState.sosAlert.condition;
+
+        const opStatusEl = document.getElementById('lockedOpStatusVal');
+        const detailEl = document.getElementById('lockedStatusDetail');
+        if (isDispatched) {
+          opStatusEl.textContent = 'Equipe ABT-04 a caminho (~4 min)';
+          opStatusEl.className = 'text-petrol-300 font-semibold text-right';
+          detailEl.textContent = 'A viatura ABT-04 do Corpo de Bombeiros já saiu da base e está indo até a Av. das Águas para resgatar você.';
+        } else {
+          opStatusEl.textContent = 'Recebido pelos Bombeiros';
+          opStatusEl.className = 'text-signal-amber font-semibold text-right';
+          detailEl.textContent = 'Os bombeiros e a Defesa Civil já receberam sua localização exata e o melhor caminho para chegar até você.';
+        }
+      }
+
+      // Aba 04: Visão Defesa Civil (Recebimento Imediato e Despacho)
+      document.getElementById('civilNoSosBox').classList.toggle('hidden', hasSos);
+      document.getElementById('civilActiveSosBox').classList.toggle('hidden', !hasSos);
+
+      if (hasSos) {
+        const isDispatched = appState.sosAlert.status === 'despachado';
+        document.getElementById('civilSosProtocol').textContent = `ALERTA RECEBIDO • ${appState.sosAlert.protocol}`;
+        document.getElementById('civilSosTime').textContent = appState.sosAlert.timestamp;
+        document.getElementById('civilSosCitizenName').textContent = `Solicitante: ${appState.sosAlert.citizenName}`;
+        document.getElementById('civilSosLocation').textContent = appState.sosAlert.locationDesc;
+        document.getElementById('civilSosCondition').textContent = appState.sosAlert.condition;
+
+        const dispatchBtn = document.getElementById('civilDispatchActionBtn');
+        if (isDispatched) {
+          dispatchBtn.disabled = true;
+          dispatchBtn.textContent = 'Viatura ABT-04 Despachada (A Caminho)';
+          dispatchBtn.className = 'flex-1 py-3 px-4 rounded-full bg-petrol-700/35 border border-petrol-300/45 text-petrol-300 font-semibold text-xs sm:text-sm cursor-default';
+        } else {
+          dispatchBtn.disabled = false;
+          dispatchBtn.textContent = 'Despachar Corpo de Bombeiros (ABT-04)';
+          dispatchBtn.className = 'flex-1 py-3 px-4 rounded-full bg-petrol-300 hover:brightness-110 text-abyss-950 font-semibold text-xs sm:text-sm transition';
+        }
+      }
+    }
+
+    // =====================================================================
+    // 5. RENDERIZAÇÃO DAS ABAS 02 E 03 & INTERAÇÕES DE ROTA
+    // =====================================================================
+    function toggleWeatherPill() {
+      const panel = document.getElementById('weatherPillExpanded');
+      const chevron = document.getElementById('weatherChevron');
+      const chevronCitizen = document.getElementById('weatherChevronCitizen');
+      const isHidden = panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !isHidden);
+      const rot = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+      if (chevron) chevron.style.transform = rot;
+      if (chevronCitizen) chevronCitizen.style.transform = rot;
+    }
+
+    function selectPainelRoute(destId) {
+      appState.selectedDestId = destId;
+      const dest = DESTINATIONS.find((d) => d.id === destId) || DESTINATIONS[0];
+
+      document.getElementById('painelCitizenRouteLabel').textContent =
+        `${dest.name} • ${dest.distance} (${dest.statusText})`;
+
+      const btnAbrigo = document.getElementById('painelRouteAbrigoBtn');
+      const btnHospital = document.getElementById('painelRouteHospitalBtn');
+
+      if (destId === 'abrigo_sul') {
+        btnAbrigo.className = 'px-3.5 py-2 rounded-full text-xs font-semibold bg-petrol-300 text-abyss-950 transition inline-flex items-center gap-1.5';
+        btnHospital.className = 'px-3.5 py-2 rounded-full text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition inline-flex items-center gap-1.5';
+      } else if (destId === 'ps_central') {
+        btnHospital.className = 'px-3.5 py-2 rounded-full text-xs font-semibold bg-petrol-300 text-abyss-950 transition inline-flex items-center gap-1.5';
+        btnAbrigo.className = 'px-3.5 py-2 rounded-full text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition inline-flex items-center gap-1.5';
+      } else {
+        btnAbrigo.className = 'px-3.5 py-2 rounded-full text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition inline-flex items-center gap-1.5';
+        btnHospital.className = 'px-3.5 py-2 rounded-full text-xs font-medium bg-white/10 text-slate-200 hover:bg-white/15 transition inline-flex items-center gap-1.5';
+      }
+
+      renderVectorMapLayers();
+      renderAbrigosTab();
+
+      // Rotas e abrigos ainda não existem no MCP: a escolha fica registrada só no front.
+      window.HydroMCP.registrarAcaoLocal('rota segura selecionada', {
+        destinationId: dest.id,
+        destinationName: dest.name,
+        distance: dest.distance
+      });
+    }
+
+    function renderSensorsTab() {
+      const container = document.getElementById('sensorsListContainer');
+      if (!container) return;
+
+      const isCivil = appState.role === 'civil';
+      document.getElementById('sensorRoleNote').textContent = isCivil
+        ? 'Modo Defesa Civil: falhas técnicas destacadas para manutenção'
+        : 'Telemetria hidrológica integrada';
+
+      container.innerHTML = SENSORS_DATA.map((sensor) => {
+        let badgeColor = 'text-petrol-300 bg-petrol-300/15 border-petrol-300/30';
+        let borderStyle = 'border-white/10';
+
+        if (sensor.status === 'critical') {
+          badgeColor = 'text-signal-coral bg-signal-coral/15 border-signal-coral/40';
+          borderStyle = 'border-signal-coral/35';
+        } else if (sensor.status === 'warning' || sensor.status === 'fault') {
+          badgeColor = 'text-signal-amber bg-signal-amber/15 border-signal-amber/40';
+          borderStyle = sensor.status === 'fault' && isCivil ? 'border-signal-amber/50' : 'border-white/10';
+        }
+
+        return `
+          <div
+            onclick="switchTab('painel'); focusSvgPoint(${sensor.x}, ${sensor.y});"
+            class="cursor-pointer p-4 rounded-2xl bg-abyss-950/70 hover:bg-abyss-900/90 border ${borderStyle} transition-all duration-200 flex flex-col justify-between gap-3"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-semibold text-slate-400 tabular">${sensor.id}</span>
+                  <span class="text-[11px] text-slate-500">•</span>
+                  <span class="text-[11px] text-slate-400">${sensor.type}</span>
+                </div>
+                <h4 class="text-xs sm:text-sm font-semibold text-white mt-1">${sensor.name}</h4>
+              </div>
+              <span class="px-2.5 py-1 rounded-full border text-[11px] font-semibold tabular shrink-0 ${badgeColor}">
+                ${sensor.capacity}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between text-xs pt-2 border-t border-white/5">
+              <span class="text-slate-300">${sensor.statusLabel}</span>
+              <span class="text-slate-400 tabular">${sensor.flow}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAbrigosTab() {
+      const sheltersEl = document.getElementById('sheltersCardsList');
+      const hospitalsEl = document.getElementById('hospitalsCardsList');
+      if (!sheltersEl || !hospitalsEl) return;
+
+      const buildCard = (item) => {
+        const active = item.id === appState.selectedDestId;
+        const isCitizen = appState.role === 'citizen';
+        const categoryIcon = item.category === 'abrigo'
+          ? '<svg class="w-4 h-4 text-petrol-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>'
+          : '<svg class="w-4 h-4 text-petrol-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6"/></svg>';
+
+        return `
+          <button
+            type="button"
+            onclick="selectPainelRoute('${item.id}')"
+            class="w-full text-left p-3.5 rounded-2xl border transition-all duration-200 ${
+              active
+                ? 'bg-petrol-700/25 border-petrol-300/55 shadow-lg'
+                : 'bg-abyss-950/70 border-white/10 hover:border-white/25'
+            }"
+          >
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-start gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-petrol-300/15 border border-petrol-300/30 flex items-center justify-center mt-0.5 shrink-0">
+                  ${categoryIcon}
+                </div>
+                <div>
+                  <h4 class="text-xs sm:text-sm font-semibold text-white">${item.name}</h4>
+                  <span class="text-[11px] text-slate-400 block mt-0.5">${item.sector}</span>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-petrol-300 tabular shrink-0">${item.distance} (${item.eta})</span>
+            </div>
+            <div class="mt-2.5 flex items-center justify-between text-[11px] pl-10">
+              <span class="text-slate-300">✓ ${item.statusText}</span>
+              <span class="${active ? 'text-petrol-300 font-semibold' : 'text-slate-400'}">
+                ${active ? (isCitizen ? '→ Caminho no mapa' : 'Rota ativa no mapa') : (isCitizen ? 'Ver caminho' : 'Traçar rota')}
+              </span>
+            </div>
+          </button>
+        `;
+      };
+
+      sheltersEl.innerHTML = DESTINATIONS.filter((d) => d.category === 'abrigo').map(buildCard).join('');
+      hospitalsEl.innerHTML = DESTINATIONS.filter((d) => d.category === 'hospital').map(buildCard).join('');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('systemToast');
+      const text = document.getElementById('systemToastText');
+      text.textContent = msg;
+      toast.classList.remove('hidden');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4200);
+    }
+
+    // Inicializar ao carregar a página
+    window.addEventListener('DOMContentLoaded', () => {
+      loadPersistedSos();
+      initVectorMapControls();
+      renderVectorMapLayers();
+    });
+  </script>
+
+  <!-- Integração com o MCP Server (cliente MCP no navegador) -->
+  <script src="js/mcp.js"></script>
+
+  <!-- Assistente de IA (Claude) com painel de perguntas, usando o MCP -->
+  <script src="js/assistente.js"></script>
+</body>
+</html>

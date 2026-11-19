@@ -1,0 +1,9 @@
+# SDK oficial da Anthropic (API do Claude)
+anthropic>=1.0,<2
+# Cliente do Model Context Protocol: o assistente usa as tools do mcp-server
+mcp>=2.3,<3
+# Servidor HTTP do assistente (a pagina de chat conversa com ele)
+starlette>=0.40
+uvicorn>=0.30
+# Leitura do arquivo .env (onde fica a chave da API)
+python-dotenv>=1.0,<2
