@@ -30,7 +30,7 @@ Projeto de Cidade Inteligente dividido em quatro partes, cada uma na sua pasta:
 | `backend/` | API REST: sensores, canais, bueiros, barragens, áreas de risco, alertas, ocorrências e previsão de chuva | Java 25, Spring Boot 4, MySQL | `backend/HELP.md` |
 | `frontend/` | Telas do cidadão e da Defesa Civil (mapa, clima, abrigos, SOS) | HTML + Tailwind | — |
 | `mcp-server/` | Ponte entre a IA e o backend: consultas e análise de risco por regras fixas | Python, SDK oficial do MCP | [`mcp-server/README.md`](mcp-server/README.md) |
-| IA | Entende a pergunta, chama as tools do MCP e escreve a resposta | Claude (ou outra compatível) | seção 9 do README do MCP |
+| `assistente/` | IA do site: chat com painel de perguntas; o Claude responde usando as tools do MCP | Python, API do Claude (Sonnet 5.5) | [`assistente/README.md`](assistente/README.md) |
 
 ## Como rodar
 
@@ -55,11 +55,17 @@ Cada parte também pode ser iniciada sozinha:
 | `iniciar_backend.bat` | Backend Spring Boot (`mvnw spring-boot:run`) | 8080 |
 | `mcp-server\iniciar.bat` | MCP Server (cria o ambiente Python na 1ª vez) | 8000 |
 | `mcp-server\simulador\iniciar_simulador.bat` | Backend simulado (no lugar do Spring Boot) | 8080 |
+| `iniciar_assistente.bat` | Assistente de IA (pede a chave da API na 1ª vez) | 8100 |
 | `iniciar_front.bat` | Frontend TechZone | 5500 |
 
 > O backend real e o simulado usam a mesma porta (8080): rode só um dos dois.
 
-### Usar com o Claude
+### Assistente de IA no site
+
+Clique em **IA** no cabeçalho do site: abre o chat com o painel de perguntas. Precisa da chave
+da API da Anthropic em `assistente/.env` (veja [`assistente/README.md`](assistente/README.md)).
+
+### Usar com o Claude Code / Claude Desktop
 
 Com o backend (real ou simulado) rodando, o MCP pode ser usado no Claude Code ou no Claude
 Desktop: veja a seção 9 do [README do MCP](mcp-server/README.md). Exemplo de pergunta:
